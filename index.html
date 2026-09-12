@@ -60,6 +60,16 @@
               <input id="read-qps" data-property="qps" type="number" min="0" step="any" inputmode="decimal" required>
             </label>
           </p>
+          <p>
+            <label for="read-peak-multiplier">Peak multiplier<br>
+              <input id="read-peak-multiplier" data-property="peakMultiplier" type="number" min="0" step="any" value="2" inputmode="decimal" required>
+            </label>
+          </p>
+          <p>
+            <label for="read-peak-qps">Read peak QPS<br>
+              <input id="read-peak-qps" data-property="peakQps" type="number" min="0" step="any" inputmode="decimal" required>
+            </label>
+          </p>
         </fieldset>
 
         <fieldset data-operation="write">
@@ -82,6 +92,16 @@
           <p>
             <label for="write-qps">Write QPS<br>
               <input id="write-qps" data-property="qps" type="number" min="0" step="any" inputmode="decimal" required>
+            </label>
+          </p>
+          <p>
+            <label for="write-peak-multiplier">Peak multiplier<br>
+              <input id="write-peak-multiplier" data-property="peakMultiplier" type="number" min="0" step="any" value="2" inputmode="decimal" required>
+            </label>
+          </p>
+          <p>
+            <label for="write-peak-qps">Write peak QPS<br>
+              <input id="write-peak-qps" data-property="peakQps" type="number" min="0" step="any" inputmode="decimal" required>
             </label>
           </p>
         </fieldset>

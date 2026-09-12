@@ -15,7 +15,7 @@ const baseFields = Object.fromEntries(
 const operationFields = [...document.querySelectorAll("[data-operation]")].map((section) => ({
   name: section.dataset.operation,
   fields: Object.fromEntries(
-    ["operationsPerDau", "dauPercentage", "qpd", "qps"].map((property) => [
+    ["operationsPerDau", "dauPercentage", "qpd", "qps", "peakMultiplier", "peakQps"].map((property) => [
       property,
       section.querySelector(`[data-property="${property}"]`),
     ]),
@@ -35,10 +35,11 @@ function render(error = null) {
 
   for (const operation of operationFields) {
     const operationValues = operations[operation.name];
+    const result = calculateOperation(values.dau, operationValues);
     for (const [property, field] of Object.entries(operation.fields)) {
-      const result = calculateOperation(values.dau, operationValues);
       field.value = formatValue(property === "qpd" ? result.qpd
         : property === "qps" ? result.qps
+          : property === "peakQps" ? result.peakQps
           : operationValues[property]);
       field.setAttribute("aria-invalid", String(Boolean(error)));
     }

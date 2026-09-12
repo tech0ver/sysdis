@@ -59,11 +59,13 @@ test("allows zero operations and zero participating DAU", () => {
   assert.deepEqual(calculateOperation(500, { operationsPerDau: 0, dauPercentage: 100 }), {
     qpd: 0,
     qps: 0,
+    peakQps: 0,
     error: null,
   });
   assert.deepEqual(calculateOperation(500, { operationsPerDau: 5, dauPercentage: 0 }), {
     qpd: 0,
     qps: 0,
+    peakQps: 0,
     error: null,
   });
 });
@@ -98,4 +100,21 @@ test("changing operation DAU percentage preserves per-user daily queries", () =>
   assert.equal(result.values.operationsPerDau, 10);
   assert.equal(result.qpd, 1000);
   assert.equal(result.qps, 1000 / 86_400);
+});
+
+test("changing peak multiplier derives peak QPS", () => {
+  const result = updateOperation(500, { operationsPerDau: 10, dauPercentage: 100, peakMultiplier: 2 }, "peakMultiplier", 3);
+
+  assert.equal(result.error, null);
+  assert.equal(result.qps, 5000 / 86_400);
+  assert.equal(result.peakQps, 15_000 / 86_400);
+});
+
+test("changing peak QPS derives peak multiplier", () => {
+  const result = updateOperation(500, { operationsPerDau: 10, dauPercentage: 100, peakMultiplier: 2 }, "peakQps", 1);
+
+  assert.equal(result.error, null);
+  assert.equal(result.qps, 5000 / 86_400);
+  assert.equal(result.values.peakMultiplier, 86_400 / 5000);
+  assert.equal(result.peakQps, 1);
 });

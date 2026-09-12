@@ -12,6 +12,7 @@ export const DEFAULT_VALUES = Object.freeze({
 export const DEFAULT_OPERATION_VALUES = Object.freeze({
   operationsPerDau: 1,
   dauPercentage: 100,
+  peakMultiplier: 2,
 });
 
 function isPositiveNumber(value) {
@@ -74,10 +75,16 @@ export function calculateOperation(dau, operationValues) {
     return { error: "DAU percentage for an operation must be between 0 and 100." };
   }
 
+  const peakMultiplier = operationValues.peakMultiplier ?? DEFAULT_OPERATION_VALUES.peakMultiplier;
+  if (!isPositiveNumber(peakMultiplier)) {
+    return { error: "Peak multiplier must be greater than 0." };
+  }
+
   const participatingDau = dau * operationValues.dauPercentage / 100;
   const qpd = participatingDau * operationValues.operationsPerDau;
 
-  return { qpd, qps: qpd / 86_400, error: null };
+  const qps = qpd / 86_400;
+  return { qpd, qps, peakQps: qps * peakMultiplier, error: null };
 }
 
 export function updateOperation(dau, operationValues, changedField, rawValue) {
@@ -104,6 +111,18 @@ export function updateOperation(dau, operationValues, changedField, rawValue) {
       return { error: "DAU percentage must be greater than 0 for a positive QPS." };
     }
     next.operationsPerDau = participatingDau === 0 ? 0 : value * 86_400 / participatingDau;
+  } else if (changedField === "peakQps") {
+    const { qps } = calculateOperation(dau, next);
+    if (qps === 0 && value > 0) {
+      return { error: "QPS must be greater than 0 for a positive peak QPS." };
+    }
+    if (qps > 0) {
+      next.peakMultiplier = value / qps;
+    }
+  } else if (changedField === "peakMultiplier") {
+    if (!isPositiveNumber(value)) {
+      return { error: "Peak multiplier must be greater than 0." };
+    }
   } else if (changedField !== "operationsPerDau" && changedField !== "dauPercentage") {
     throw new Error(`Unknown operation field: ${changedField}`);
   }
