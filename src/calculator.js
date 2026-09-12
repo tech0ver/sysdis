@@ -4,8 +4,8 @@ const NUMBER_FORMATTER = new Intl.NumberFormat("en-US", {
 });
 
 export const DEFAULT_VALUES = Object.freeze({
-  mau: 1000,
-  dau: 500,
+  mau: 10_000_000,
+  dau: 5_000_000,
   percentage: 50,
 });
 

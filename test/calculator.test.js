@@ -21,21 +21,21 @@ test("changing percentage preserves MAU and recalculates DAU", () => {
   const result = updateValues(DEFAULT_VALUES, "percentage", 80);
 
   assert.equal(result.error, null);
-  assert.deepEqual(result.values, { mau: 1000, dau: 800, percentage: 80 });
+  assert.deepEqual(result.values, { mau: 10_000_000, dau: 8_000_000, percentage: 80 });
 });
 
 test("changing DAU preserves MAU and recalculates percentage", () => {
   const result = updateValues(DEFAULT_VALUES, "dau", 250);
 
   assert.equal(result.error, null);
-  assert.deepEqual(result.values, { mau: 1000, dau: 250, percentage: 25 });
+  assert.deepEqual(result.values, { mau: 10_000_000, dau: 250, percentage: 0.0025 });
 });
 
 test("100 percent is valid", () => {
   const result = updateValues(DEFAULT_VALUES, "percentage", 100);
 
   assert.equal(result.error, null);
-  assert.deepEqual(result.values, { mau: 1000, dau: 1000, percentage: 100 });
+  assert.deepEqual(result.values, { mau: 10_000_000, dau: 10_000_000, percentage: 100 });
 });
 
 test("rejects non-positive values and values over 100 percent", () => {
