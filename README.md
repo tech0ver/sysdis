@@ -2,6 +2,15 @@
 
 Small, dependency-free calculators for learning system design.
 
+The initial tool derives DAU from MAU and active-user percentage, then derives
+read and write traffic for each operation:
+
+```text
+participating DAU = DAU × operation DAU percentage / 100
+QPD = participating DAU × operations per participating DAU per day
+QPS = QPD / 86,400
+```
+
 ## Development
 
 Run the calculator tests:

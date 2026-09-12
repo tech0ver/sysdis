@@ -29,6 +29,39 @@
           <p id="validation-message" role="alert" aria-live="polite"></p>
         </form>
       </section>
+
+      <section aria-labelledby="qps-calculator-title">
+        <h2 id="qps-calculator-title">Read and write QPS calculator</h2>
+        <p>Each operation can be performed by a different percentage of daily active users.</p>
+
+        <fieldset data-operation="read">
+          <legend>Read operations</legend>
+          <p>
+            <label for="read-operations-per-dau">Read operations per participating DAU per day</label>
+            <input id="read-operations-per-dau" name="readOperationsPerDau" type="number" min="0" step="any" value="1" inputmode="decimal" required>
+          </p>
+          <p>
+            <label for="read-dau-percentage">DAU performing reads (%)</label>
+            <input id="read-dau-percentage" name="readDauPercentage" type="number" min="0" max="100" step="any" value="100" inputmode="decimal" required>
+          </p>
+          <p>Read QPD: <output id="read-qpd"></output></p>
+          <p>Read QPS: <output id="read-qps"></output></p>
+        </fieldset>
+
+        <fieldset data-operation="write">
+          <legend>Write operations</legend>
+          <p>
+            <label for="write-operations-per-dau">Write operations per participating DAU per day</label>
+            <input id="write-operations-per-dau" name="writeOperationsPerDau" type="number" min="0" step="any" value="1" inputmode="decimal" required>
+          </p>
+          <p>
+            <label for="write-dau-percentage">DAU performing writes (%)</label>
+            <input id="write-dau-percentage" name="writeDauPercentage" type="number" min="0" max="100" step="any" value="100" inputmode="decimal" required>
+          </p>
+          <p>Write QPD: <output id="write-qpd"></output></p>
+          <p>Write QPS: <output id="write-qps"></output></p>
+        </fieldset>
+      </section>
     </main>
   </body>
 </html>

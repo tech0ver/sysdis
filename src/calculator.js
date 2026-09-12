@@ -9,6 +9,11 @@ export const DEFAULT_VALUES = Object.freeze({
   percentage: 50,
 });
 
+export const DEFAULT_OPERATION_VALUES = Object.freeze({
+  operationsPerDau: 1,
+  dauPercentage: 100,
+});
+
 function isPositiveNumber(value) {
   return Number.isFinite(value) && value > 0;
 }
@@ -52,6 +57,27 @@ export function updateValues(values, changedField, rawValue) {
   }
 
   return { values: next, error: validate(next) };
+}
+
+export function calculateOperation(dau, operationValues) {
+  if (!isPositiveNumber(dau)) {
+    return { error: "DAU must be a positive number." };
+  }
+
+  if (!Number.isFinite(operationValues.operationsPerDau) || operationValues.operationsPerDau < 0) {
+    return { error: "Operations per DAU per day must be zero or greater." };
+  }
+
+  if (!Number.isFinite(operationValues.dauPercentage)
+    || operationValues.dauPercentage < 0
+    || operationValues.dauPercentage > 100) {
+    return { error: "DAU percentage for an operation must be between 0 and 100." };
+  }
+
+  const participatingDau = dau * operationValues.dauPercentage / 100;
+  const qpd = participatingDau * operationValues.operationsPerDau;
+
+  return { qpd, qps: qpd / 86_400, error: null };
 }
 
 export function formatValue(value) {
