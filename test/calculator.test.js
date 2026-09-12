@@ -4,10 +4,12 @@ import test from "node:test";
 import {
   DEFAULT_VALUES,
   calculateBandwidth,
+  calculateStorage,
   calculateOperation,
   formatValue,
   updateOperation,
   updateBandwidth,
+  updateStorage,
   updateValues,
   validate,
 } from "../src/calculator.js";
@@ -143,4 +145,35 @@ test("changing bytes per second derives data bytes and bytes per day", () => {
   assert.equal(result.error, null);
   assert.equal(result.values.dataBytes, 4320);
   assert.equal(result.bytesPerDay, 432_000_000);
+});
+
+test("calculates physical storage from the new-data portion of write QPD", () => {
+  const result = calculateStorage(100_000, {
+    storedBytes: 1024,
+    newDataPercentage: 50,
+    retentionDays: 365,
+    compressionFactor: 1,
+    replicationFactor: 3,
+    overheadFactor: 1.2,
+  });
+
+  assert.equal(result.error, null);
+  assert.equal(result.logicalBytes, 100_000 * 0.5 * 1024 * 365);
+  assert.equal(result.physicalBytes, result.logicalBytes * 3 * 1.2);
+});
+
+test("changing physical storage derives stored bytes per new write", () => {
+  const result = updateStorage(100_000, {
+    storedBytes: 1024,
+    newDataPercentage: 100,
+    retentionDays: 10,
+    compressionFactor: 1,
+    replicationFactor: 2,
+    overheadFactor: 1,
+  }, "physicalBytes", 4_000_000_000);
+
+  assert.equal(result.error, null);
+  assert.equal(result.values.storedBytes, 2000);
+  assert.equal(result.logicalBytes, 2_000_000_000);
+  assert.equal(result.physicalBytes, 4_000_000_000);
 });

@@ -134,6 +134,47 @@
               <input id="write-bytes-per-second" data-bandwidth-property="bytesPerSecond" type="number" min="0" step="any" inputmode="decimal" required>
             </label>
           </p>
+          <h3>Write storage</h3>
+          <p>
+            <label for="write-stored-bytes">Stored bytes per new write<br>
+              <input id="write-stored-bytes" data-storage-property="storedBytes" type="number" min="0" step="any" value="1024" inputmode="decimal" required>
+            </label>
+          </p>
+          <p>
+            <label for="write-new-data-percentage">New-data writes (%)<br>
+              <input id="write-new-data-percentage" data-storage-property="newDataPercentage" type="number" min="0" max="100" step="any" value="100" inputmode="decimal" required>
+            </label>
+          </p>
+          <p>
+            <label for="write-retention-days">Retention (days)<br>
+              <input id="write-retention-days" data-storage-property="retentionDays" type="number" min="0" step="any" value="365" inputmode="decimal" required>
+            </label>
+          </p>
+          <p>
+            <label for="write-compression-factor">Compression factor<br>
+              <input id="write-compression-factor" data-storage-property="compressionFactor" type="number" min="0" step="any" value="1" inputmode="decimal" required>
+            </label>
+          </p>
+          <p>
+            <label for="write-replication-factor">Replication factor<br>
+              <input id="write-replication-factor" data-storage-property="replicationFactor" type="number" min="0" step="any" value="3" inputmode="decimal" required>
+            </label>
+          </p>
+          <p>
+            <label for="write-overhead-factor">Storage overhead factor<br>
+              <input id="write-overhead-factor" data-storage-property="overheadFactor" type="number" min="0" step="any" value="1.2" inputmode="decimal" required>
+            </label>
+          </p>
+          <p>
+            <label for="write-logical-bytes">Logical storage (bytes)<br>
+              <input id="write-logical-bytes" data-storage-property="logicalBytes" type="number" min="0" step="any" inputmode="decimal" required>
+            </label>
+          </p>
+          <p>
+            <label for="write-physical-bytes">Physical storage (bytes)<br>
+              <input id="write-physical-bytes" data-storage-property="physicalBytes" type="number" min="0" step="any" inputmode="decimal" required>
+            </label>
+          </p>
         </fieldset>
       </section>
     </main>

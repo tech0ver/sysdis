@@ -1,12 +1,15 @@
 import {
   DEFAULT_OPERATION_VALUES,
   DEFAULT_BANDWIDTH_VALUES,
+  DEFAULT_STORAGE_VALUES,
   DEFAULT_VALUES,
   calculateBandwidth,
   calculateOperation,
+  calculateStorage,
   formatValue,
   updateBandwidth,
   updateOperation,
+  updateStorage,
   updateValues,
 } from "./calculator.js";
 
@@ -29,6 +32,12 @@ const operationFields = [...document.querySelectorAll("[data-operation]")].map((
       section.querySelector(`[data-bandwidth-property="${property}"]`),
     ]),
   ),
+  storageFields: section.dataset.operation === "write" ? Object.fromEntries(
+    ["storedBytes", "newDataPercentage", "retentionDays", "compressionFactor", "replicationFactor", "overheadFactor", "logicalBytes", "physicalBytes"].map((property) => [
+      property,
+      section.querySelector(`[data-storage-property="${property}"]`),
+    ]),
+  ) : null,
 }));
 
 let values = { ...DEFAULT_VALUES };
@@ -37,6 +46,11 @@ const operations = Object.fromEntries(
 );
 const bandwidths = Object.fromEntries(
   operationFields.map(({ name }) => [name, { ...DEFAULT_BANDWIDTH_VALUES }]),
+);
+const storages = Object.fromEntries(
+  operationFields
+    .filter(({ storageFields }) => storageFields)
+    .map(({ name }) => [name, { ...DEFAULT_STORAGE_VALUES }]),
 );
 
 function render(error = null) {
@@ -63,6 +77,17 @@ function render(error = null) {
         : property === "bytesPerSecond" ? bandwidth.bytesPerSecond
           : bandwidthValues[property]);
       field.setAttribute("aria-invalid", String(Boolean(error)));
+    }
+
+    if (operation.storageFields) {
+      const storageValues = storages[operation.name];
+      const storage = calculateStorage(result.qpd, storageValues);
+      for (const [property, field] of Object.entries(operation.storageFields)) {
+        field.value = formatValue(property === "logicalBytes" ? storage.logicalBytes
+          : property === "physicalBytes" ? storage.physicalBytes
+            : storageValues[property]);
+        field.setAttribute("aria-invalid", String(Boolean(error)));
+      }
     }
   }
 
@@ -111,6 +136,23 @@ for (const operation of operationFields) {
       bandwidths[operation.name] = result.values;
       render();
     });
+  }
+
+  if (operation.storageFields) {
+    for (const [property, field] of Object.entries(operation.storageFields)) {
+      field.addEventListener("change", (event) => {
+        const writeQpd = calculateOperation(values.dau, operations[operation.name]).qpd;
+        const result = updateStorage(writeQpd, storages[operation.name], property, event.target.value);
+        if (result.error) {
+          message.textContent = result.error;
+          event.target.setAttribute("aria-invalid", "true");
+          return;
+        }
+
+        storages[operation.name] = result.values;
+        render();
+      });
+    }
   }
 }
 

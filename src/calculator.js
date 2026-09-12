@@ -19,6 +19,15 @@ export const DEFAULT_BANDWIDTH_VALUES = Object.freeze({
   dataBytes: 1024,
 });
 
+export const DEFAULT_STORAGE_VALUES = Object.freeze({
+  storedBytes: 1024,
+  newDataPercentage: 100,
+  retentionDays: 365,
+  compressionFactor: 1,
+  replicationFactor: 3,
+  overheadFactor: 1.2,
+});
+
 function isPositiveNumber(value) {
   return Number.isFinite(value) && value > 0;
 }
@@ -166,6 +175,64 @@ export function updateBandwidth(qpd, bandwidthValues, changedField, rawValue) {
   }
 
   const result = calculateBandwidth(qpd, next);
+  return { values: next, ...result };
+}
+
+export function calculateStorage(writeQpd, storageValues) {
+  if (!Number.isFinite(writeQpd) || writeQpd < 0) {
+    return { error: "Write QPD must be zero or greater." };
+  }
+
+  if (!Number.isFinite(storageValues.storedBytes) || storageValues.storedBytes < 0) {
+    return { error: "Stored bytes per new write must be zero or greater." };
+  }
+
+  if (!Number.isFinite(storageValues.newDataPercentage)
+    || storageValues.newDataPercentage < 0
+    || storageValues.newDataPercentage > 100) {
+    return { error: "New-data write percentage must be between 0 and 100." };
+  }
+
+  if (!Number.isFinite(storageValues.retentionDays) || storageValues.retentionDays < 0) {
+    return { error: "Retention days must be zero or greater." };
+  }
+
+  for (const field of ["compressionFactor", "replicationFactor", "overheadFactor"]) {
+    if (!isPositiveNumber(storageValues[field])) {
+      return { error: `${field} must be greater than 0.` };
+    }
+  }
+
+  const newDataQpd = writeQpd * storageValues.newDataPercentage / 100;
+  const logicalBytes = newDataQpd * storageValues.storedBytes * storageValues.retentionDays;
+  const physicalBytes = logicalBytes
+    * storageValues.compressionFactor
+    * storageValues.replicationFactor
+    * storageValues.overheadFactor;
+  return { logicalBytes, physicalBytes, error: null };
+}
+
+export function updateStorage(writeQpd, storageValues, changedField, rawValue) {
+  const value = Number(rawValue);
+  if (!Number.isFinite(value) || value < 0) {
+    return { error: "Storage values must be zero or greater." };
+  }
+
+  const next = { ...storageValues, [changedField]: value };
+  if (changedField === "logicalBytes" || changedField === "physicalBytes") {
+    const factor = next.compressionFactor * next.replicationFactor * next.overheadFactor;
+    const logicalBytes = changedField === "physicalBytes" ? value / factor : value;
+    const newDataQpd = writeQpd * next.newDataPercentage / 100;
+    const storageDays = newDataQpd * next.retentionDays;
+    if (storageDays === 0 && logicalBytes > 0) {
+      return { error: "New-data QPD and retention must be greater than 0 for positive storage." };
+    }
+    next.storedBytes = storageDays === 0 ? 0 : logicalBytes / storageDays;
+  } else if (!["storedBytes", "newDataPercentage", "retentionDays", "compressionFactor", "replicationFactor", "overheadFactor"].includes(changedField)) {
+    throw new Error(`Unknown storage field: ${changedField}`);
+  }
+
+  const result = calculateStorage(writeQpd, next);
   return { values: next, ...result };
 }
 
