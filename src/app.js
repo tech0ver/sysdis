@@ -3,6 +3,7 @@ import {
   DEFAULT_VALUES,
   calculateOperation,
   formatValue,
+  updateOperation,
   updateValues,
 } from "./calculator.js";
 
@@ -14,13 +15,11 @@ const baseFields = Object.fromEntries(
 const operationFields = [...document.querySelectorAll("[data-operation]")].map((section) => ({
   name: section.dataset.operation,
   fields: Object.fromEntries(
-    ["operationsPerDau", "dauPercentage"].map((property) => [
+    ["operationsPerDau", "dauPercentage", "qpd", "qps"].map((property) => [
       property,
-      section.querySelector(`[name$="${property[0].toUpperCase()}${property.slice(1)}"]`),
+      section.querySelector(`[data-property="${property}"]`),
     ]),
   ),
-  qpd: section.querySelector("output[id$='-qpd']"),
-  qps: section.querySelector("output[id$='-qps']"),
 }));
 
 let values = { ...DEFAULT_VALUES };
@@ -37,13 +36,12 @@ function render(error = null) {
   for (const operation of operationFields) {
     const operationValues = operations[operation.name];
     for (const [property, field] of Object.entries(operation.fields)) {
-      field.value = formatValue(operationValues[property]);
+      const result = calculateOperation(values.dau, operationValues);
+      field.value = formatValue(property === "qpd" ? result.qpd
+        : property === "qps" ? result.qps
+          : operationValues[property]);
       field.setAttribute("aria-invalid", String(Boolean(error)));
     }
-
-    const result = calculateOperation(values.dau, operationValues);
-    operation.qpd.value = result.error ? "" : formatValue(result.qpd);
-    operation.qps.value = result.error ? "" : formatValue(result.qps);
   }
 
   message.textContent = error ?? "";
@@ -66,15 +64,14 @@ for (const field of Object.values(baseFields)) {
 for (const operation of operationFields) {
   for (const [property, field] of Object.entries(operation.fields)) {
     field.addEventListener("change", (event) => {
-      const next = { ...operations[operation.name], [property]: Number(event.target.value) };
-      const result = calculateOperation(values.dau, next);
+      const result = updateOperation(values.dau, operations[operation.name], property, event.target.value);
       if (result.error) {
         message.textContent = result.error;
         event.target.setAttribute("aria-invalid", "true");
         return;
       }
 
-      operations[operation.name] = next;
+      operations[operation.name] = result.values;
       render();
     });
   }

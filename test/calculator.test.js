@@ -5,6 +5,7 @@ import {
   DEFAULT_VALUES,
   calculateOperation,
   formatValue,
+  updateOperation,
   updateValues,
   validate,
 } from "../src/calculator.js";
@@ -70,4 +71,31 @@ test("allows zero operations and zero participating DAU", () => {
 test("rejects invalid operation values", () => {
   assert.match(calculateOperation(500, { operationsPerDau: -1, dauPercentage: 50 }).error, /zero or greater/);
   assert.match(calculateOperation(500, { operationsPerDau: 1, dauPercentage: 101 }).error, /between 0 and 100/);
+});
+
+test("changing QPD derives queries per user per day and QPS", () => {
+  const result = updateOperation(500, { operationsPerDau: 1, dauPercentage: 100 }, "qpd", 100_000);
+
+  assert.equal(result.error, null);
+  assert.equal(result.values.operationsPerDau, 200);
+  assert.equal(result.qpd, 100_000);
+  assert.equal(result.qps, 100_000 / 86_400);
+});
+
+test("changing QPS derives queries per user per day and QPD", () => {
+  const result = updateOperation(500, { operationsPerDau: 1, dauPercentage: 100 }, "qps", 2);
+
+  assert.equal(result.error, null);
+  assert.equal(result.values.operationsPerDau, 345.6);
+  assert.equal(result.qpd, 172_800);
+  assert.equal(result.qps, 2);
+});
+
+test("changing operation DAU percentage preserves per-user daily queries", () => {
+  const result = updateOperation(500, { operationsPerDau: 10, dauPercentage: 100 }, "dauPercentage", 20);
+
+  assert.equal(result.error, null);
+  assert.equal(result.values.operationsPerDau, 10);
+  assert.equal(result.qpd, 1000);
+  assert.equal(result.qps, 1000 / 86_400);
 });

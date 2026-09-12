@@ -80,6 +80,38 @@ export function calculateOperation(dau, operationValues) {
   return { qpd, qps: qpd / 86_400, error: null };
 }
 
+export function updateOperation(dau, operationValues, changedField, rawValue) {
+  const value = Number(rawValue);
+  if (!Number.isFinite(value) || value < 0) {
+    return { error: "Operation values must be zero or greater." };
+  }
+
+  const next = { ...operationValues, [changedField]: value };
+  if (!Number.isFinite(next.dauPercentage)
+    || next.dauPercentage < 0
+    || next.dauPercentage > 100) {
+    return { error: "DAU percentage for an operation must be between 0 and 100." };
+  }
+
+  const participatingDau = dau * next.dauPercentage / 100;
+  if (changedField === "qpd") {
+    if (participatingDau === 0 && value > 0) {
+      return { error: "DAU percentage must be greater than 0 for a positive QPD." };
+    }
+    next.operationsPerDau = participatingDau === 0 ? 0 : value / participatingDau;
+  } else if (changedField === "qps") {
+    if (participatingDau === 0 && value > 0) {
+      return { error: "DAU percentage must be greater than 0 for a positive QPS." };
+    }
+    next.operationsPerDau = participatingDau === 0 ? 0 : value * 86_400 / participatingDau;
+  } else if (changedField !== "operationsPerDau" && changedField !== "dauPercentage") {
+    throw new Error(`Unknown operation field: ${changedField}`);
+  }
+
+  const result = calculateOperation(dau, next);
+  return { values: next, ...result };
+}
+
 export function formatValue(value) {
   return Number.isFinite(value) ? NUMBER_FORMATTER.format(value) : "";
 }

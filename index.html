@@ -15,16 +15,19 @@
 
         <form id="calculator" novalidate>
           <p>
-            <label for="mau">Monthly active users (MAU)</label>
-            <input id="mau" name="mau" type="number" min="0" step="any" value="1000" inputmode="decimal" required>
+            <label for="mau">Monthly active users (MAU)<br>
+              <input id="mau" name="mau" type="number" min="0" step="any" value="1000" inputmode="decimal" required>
+            </label>
           </p>
           <p>
-            <label for="dau">Daily active users (DAU)</label>
-            <input id="dau" name="dau" type="number" min="0" step="any" value="500" inputmode="decimal" required>
+            <label for="dau">Daily active users (DAU)<br>
+              <input id="dau" name="dau" type="number" min="0" step="any" value="500" inputmode="decimal" required>
+            </label>
           </p>
           <p>
-            <label for="percentage">Active users (%)</label>
-            <input id="percentage" name="percentage" type="number" min="0" max="100" step="any" value="50" inputmode="decimal" required>
+            <label for="percentage">Active users (%)<br>
+              <input id="percentage" name="percentage" type="number" min="0" max="100" step="any" value="50" inputmode="decimal" required>
+            </label>
           </p>
           <p id="validation-message" role="alert" aria-live="polite"></p>
         </form>
@@ -37,29 +40,49 @@
         <fieldset data-operation="read">
           <legend>Read operations</legend>
           <p>
-            <label for="read-operations-per-dau">Read operations per participating DAU per day</label>
-            <input id="read-operations-per-dau" name="readOperationsPerDau" type="number" min="0" step="any" value="1" inputmode="decimal" required>
+            <label for="read-operations-per-dau">Queries per participating user per day<br>
+              <input id="read-operations-per-dau" data-property="operationsPerDau" type="number" min="0" step="any" value="1" inputmode="decimal" required>
+            </label>
           </p>
           <p>
-            <label for="read-dau-percentage">DAU performing reads (%)</label>
-            <input id="read-dau-percentage" name="readDauPercentage" type="number" min="0" max="100" step="any" value="100" inputmode="decimal" required>
+            <label for="read-dau-percentage">DAU performing reads (%)<br>
+              <input id="read-dau-percentage" data-property="dauPercentage" type="number" min="0" max="100" step="any" value="100" inputmode="decimal" required>
+            </label>
           </p>
-          <p>Read QPD: <output id="read-qpd"></output></p>
-          <p>Read QPS: <output id="read-qps"></output></p>
+          <p>
+            <label for="read-qpd">Read QPD<br>
+              <input id="read-qpd" data-property="qpd" type="number" min="0" step="any" inputmode="decimal" required>
+            </label>
+          </p>
+          <p>
+            <label for="read-qps">Read QPS<br>
+              <input id="read-qps" data-property="qps" type="number" min="0" step="any" inputmode="decimal" required>
+            </label>
+          </p>
         </fieldset>
 
         <fieldset data-operation="write">
           <legend>Write operations</legend>
           <p>
-            <label for="write-operations-per-dau">Write operations per participating DAU per day</label>
-            <input id="write-operations-per-dau" name="writeOperationsPerDau" type="number" min="0" step="any" value="1" inputmode="decimal" required>
+            <label for="write-operations-per-dau">Queries per participating user per day<br>
+              <input id="write-operations-per-dau" data-property="operationsPerDau" type="number" min="0" step="any" value="1" inputmode="decimal" required>
+            </label>
           </p>
           <p>
-            <label for="write-dau-percentage">DAU performing writes (%)</label>
-            <input id="write-dau-percentage" name="writeDauPercentage" type="number" min="0" max="100" step="any" value="100" inputmode="decimal" required>
+            <label for="write-dau-percentage">DAU performing writes (%)<br>
+              <input id="write-dau-percentage" data-property="dauPercentage" type="number" min="0" max="100" step="any" value="100" inputmode="decimal" required>
+            </label>
           </p>
-          <p>Write QPD: <output id="write-qpd"></output></p>
-          <p>Write QPS: <output id="write-qps"></output></p>
+          <p>
+            <label for="write-qpd">Write QPD<br>
+              <input id="write-qpd" data-property="qpd" type="number" min="0" step="any" inputmode="decimal" required>
+            </label>
+          </p>
+          <p>
+            <label for="write-qps">Write QPS<br>
+              <input id="write-qps" data-property="qps" type="number" min="0" step="any" inputmode="decimal" required>
+            </label>
+          </p>
         </fieldset>
       </section>
     </main>
