@@ -1,8 +1,11 @@
 import {
   DEFAULT_OPERATION_VALUES,
+  DEFAULT_BANDWIDTH_VALUES,
   DEFAULT_VALUES,
+  calculateBandwidth,
   calculateOperation,
   formatValue,
+  updateBandwidth,
   updateOperation,
   updateValues,
 } from "./calculator.js";
@@ -20,11 +23,20 @@ const operationFields = [...document.querySelectorAll("[data-operation]")].map((
       section.querySelector(`[data-property="${property}"]`),
     ]),
   ),
+  bandwidthFields: Object.fromEntries(
+    ["dataBytes", "bytesPerDay", "bytesPerSecond"].map((property) => [
+      property,
+      section.querySelector(`[data-bandwidth-property="${property}"]`),
+    ]),
+  ),
 }));
 
 let values = { ...DEFAULT_VALUES };
 const operations = Object.fromEntries(
   operationFields.map(({ name }) => [name, { ...DEFAULT_OPERATION_VALUES }]),
+);
+const bandwidths = Object.fromEntries(
+  operationFields.map(({ name }) => [name, { ...DEFAULT_BANDWIDTH_VALUES }]),
 );
 
 function render(error = null) {
@@ -41,6 +53,15 @@ function render(error = null) {
         : property === "qps" ? result.qps
           : property === "peakQps" ? result.peakQps
           : operationValues[property]);
+      field.setAttribute("aria-invalid", String(Boolean(error)));
+    }
+
+    const bandwidthValues = bandwidths[operation.name];
+    const bandwidth = calculateBandwidth(result.qpd, bandwidthValues);
+    for (const [property, field] of Object.entries(operation.bandwidthFields)) {
+      field.value = formatValue(property === "bytesPerDay" ? bandwidth.bytesPerDay
+        : property === "bytesPerSecond" ? bandwidth.bytesPerSecond
+          : bandwidthValues[property]);
       field.setAttribute("aria-invalid", String(Boolean(error)));
     }
   }
@@ -73,6 +94,21 @@ for (const operation of operationFields) {
       }
 
       operations[operation.name] = result.values;
+      render();
+    });
+  }
+
+  for (const [property, field] of Object.entries(operation.bandwidthFields)) {
+    field.addEventListener("change", (event) => {
+      const qpd = calculateOperation(values.dau, operations[operation.name]).qpd;
+      const result = updateBandwidth(qpd, bandwidths[operation.name], property, event.target.value);
+      if (result.error) {
+        message.textContent = result.error;
+        event.target.setAttribute("aria-invalid", "true");
+        return;
+      }
+
+      bandwidths[operation.name] = result.values;
       render();
     });
   }

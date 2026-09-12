@@ -15,6 +15,10 @@ export const DEFAULT_OPERATION_VALUES = Object.freeze({
   peakMultiplier: 2,
 });
 
+export const DEFAULT_BANDWIDTH_VALUES = Object.freeze({
+  dataBytes: 1024,
+});
+
 function isPositiveNumber(value) {
   return Number.isFinite(value) && value > 0;
 }
@@ -128,6 +132,40 @@ export function updateOperation(dau, operationValues, changedField, rawValue) {
   }
 
   const result = calculateOperation(dau, next);
+  return { values: next, ...result };
+}
+
+export function calculateBandwidth(qpd, bandwidthValues) {
+  if (!Number.isFinite(qpd) || qpd < 0) {
+    return { error: "QPD must be zero or greater." };
+  }
+
+  if (!Number.isFinite(bandwidthValues.dataBytes) || bandwidthValues.dataBytes < 0) {
+    return { error: "Data bytes per operation must be zero or greater." };
+  }
+
+  const bytesPerDay = qpd * bandwidthValues.dataBytes;
+  return { bytesPerDay, bytesPerSecond: bytesPerDay / 86_400, error: null };
+}
+
+export function updateBandwidth(qpd, bandwidthValues, changedField, rawValue) {
+  const value = Number(rawValue);
+  if (!Number.isFinite(value) || value < 0) {
+    return { error: "Bandwidth values must be zero or greater." };
+  }
+
+  const next = { ...bandwidthValues, [changedField]: value };
+  if (changedField === "bytesPerDay" || changedField === "bytesPerSecond") {
+    const bytesPerDay = changedField === "bytesPerSecond" ? value * 86_400 : value;
+    if (qpd === 0 && bytesPerDay > 0) {
+      return { error: "QPD must be greater than 0 for a positive bandwidth." };
+    }
+    next.dataBytes = qpd === 0 ? 0 : bytesPerDay / qpd;
+  } else if (changedField !== "dataBytes") {
+    throw new Error(`Unknown bandwidth field: ${changedField}`);
+  }
+
+  const result = calculateBandwidth(qpd, next);
   return { values: next, ...result };
 }
 

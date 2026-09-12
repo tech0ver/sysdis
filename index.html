@@ -70,6 +70,21 @@
               <input id="read-peak-qps" data-property="peakQps" type="number" min="0" step="any" inputmode="decimal" required>
             </label>
           </p>
+          <p>
+            <label for="read-data-bytes">Response data per read (bytes)<br>
+              <input id="read-data-bytes" data-bandwidth-property="dataBytes" type="number" min="0" step="any" value="1024" inputmode="decimal" required>
+            </label>
+          </p>
+          <p>
+            <label for="read-bytes-per-day">Download bytes per day<br>
+              <input id="read-bytes-per-day" data-bandwidth-property="bytesPerDay" type="number" min="0" step="any" inputmode="decimal" required>
+            </label>
+          </p>
+          <p>
+            <label for="read-bytes-per-second">Download bytes per second<br>
+              <input id="read-bytes-per-second" data-bandwidth-property="bytesPerSecond" type="number" min="0" step="any" inputmode="decimal" required>
+            </label>
+          </p>
         </fieldset>
 
         <fieldset data-operation="write">
@@ -102,6 +117,21 @@
           <p>
             <label for="write-peak-qps">Write peak QPS<br>
               <input id="write-peak-qps" data-property="peakQps" type="number" min="0" step="any" inputmode="decimal" required>
+            </label>
+          </p>
+          <p>
+            <label for="write-data-bytes">Request data per write (bytes)<br>
+              <input id="write-data-bytes" data-bandwidth-property="dataBytes" type="number" min="0" step="any" value="1024" inputmode="decimal" required>
+            </label>
+          </p>
+          <p>
+            <label for="write-bytes-per-day">Upload bytes per day<br>
+              <input id="write-bytes-per-day" data-bandwidth-property="bytesPerDay" type="number" min="0" step="any" inputmode="decimal" required>
+            </label>
+          </p>
+          <p>
+            <label for="write-bytes-per-second">Upload bytes per second<br>
+              <input id="write-bytes-per-second" data-bandwidth-property="bytesPerSecond" type="number" min="0" step="any" inputmode="decimal" required>
             </label>
           </p>
         </fieldset>

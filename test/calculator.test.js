@@ -3,9 +3,11 @@ import test from "node:test";
 
 import {
   DEFAULT_VALUES,
+  calculateBandwidth,
   calculateOperation,
   formatValue,
   updateOperation,
+  updateBandwidth,
   updateValues,
   validate,
 } from "../src/calculator.js";
@@ -117,4 +119,28 @@ test("changing peak QPS derives peak multiplier", () => {
   assert.equal(result.qps, 5000 / 86_400);
   assert.equal(result.values.peakMultiplier, 86_400 / 5000);
   assert.equal(result.peakQps, 1);
+});
+
+test("calculates bandwidth from QPD and response bytes", () => {
+  const result = calculateBandwidth(100_000, { dataBytes: 1024 });
+
+  assert.equal(result.error, null);
+  assert.equal(result.bytesPerDay, 102_400_000);
+  assert.equal(result.bytesPerSecond, 102_400_000 / 86_400);
+});
+
+test("changing bytes per day derives data bytes and bytes per second", () => {
+  const result = updateBandwidth(100_000, { dataBytes: 1024 }, "bytesPerDay", 200_000_000);
+
+  assert.equal(result.error, null);
+  assert.equal(result.values.dataBytes, 2000);
+  assert.equal(result.bytesPerSecond, 200_000_000 / 86_400);
+});
+
+test("changing bytes per second derives data bytes and bytes per day", () => {
+  const result = updateBandwidth(100_000, { dataBytes: 1024 }, "bytesPerSecond", 5000);
+
+  assert.equal(result.error, null);
+  assert.equal(result.values.dataBytes, 4320);
+  assert.equal(result.bytesPerDay, 432_000_000);
 });
