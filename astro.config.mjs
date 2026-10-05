@@ -11,6 +11,9 @@ export default defineConfig({
 			favicon: '/favicon.png',
 			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/tech0ver/sysdis' }],
 			customCss: ['./src/styles/theme.css'],
+			components: {
+				ThemeSelect: './src/components/ThemeToggle.astro',
+			},
 			sidebar: ['foo-bar'],
 		}),
 	],
