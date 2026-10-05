@@ -36,10 +36,10 @@ Use GitHub Flow. `main` accepts changes only through pull requests; force pushes
 2. Make a focused change. Do not mix unrelated changes.
 3. Open a pull request. Its title and description become the commit message on `main`, so write them as a record of the change, not as a note to the reviewer. Avoid tables and long lines.
 4. Wait for human approval. Do not merge unapproved work.
-5. Squash merge. This is the only merge method enabled; the branch is deleted automatically.
+5. Squash merge with `gh pr merge <number> --squash` (or the merge button on GitHub). Do not pass `--subject` or `--body`: GitHub builds the commit message from the PR title and description. Squash is the only merge method enabled; the branch is deleted automatically.
 
 Use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) for commit messages and PR titles. The branch `<type>` uses the same set of types.
 
-Sign off every commit with `git commit -s`. When an agent contributes, add a `Co-authored-by` trailer with its name and model. Do not repeat these trailers in the PR description: when squashing, GitHub collects `Co-authored-by` from the branch commits and adds `Signed-off-by` for the merger (web sign-off is required in repository settings).
+Sign off every commit with `git commit -s`. When an agent contributes, add a `Co-authored-by` trailer with its name and model. Do not put these trailers in the PR description.
 
 Do not add tool banners such as "Generated with …" to PR descriptions or commit messages. The `Co-authored-by` trailer is the attribution.
