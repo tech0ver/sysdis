@@ -40,6 +40,6 @@ Use GitHub Flow. `main` accepts changes only through pull requests; force pushes
 
 Use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) for commit messages and PR titles. The branch `<type>` uses the same set of types.
 
-Sign off every commit with `git commit -s`. When an agent contributes, add a `Co-authored-by` trailer with its name and model. Do not repeat these trailers in the PR description: when squashing, GitHub collects `Co-authored-by` from the branch commits on its own.
+Sign off every commit with `git commit -s`. When an agent contributes, add a `Co-authored-by` trailer with its name and model. Do not repeat these trailers in the PR description: when squashing, GitHub collects `Co-authored-by` from the branch commits and adds `Signed-off-by` for the merger (web sign-off is required in repository settings).
 
 Do not add tool banners such as "Generated with …" to PR descriptions or commit messages. The `Co-authored-by` trailer is the attribution.
