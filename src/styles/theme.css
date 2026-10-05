@@ -1,0 +1,55 @@
+/*
+ * Color theme based on Skeleton's "Mona" theme (https://www.skeleton.dev/themes).
+ * Palette values are copied from Skeleton's primary-* and surface-* tokens.
+ */
+
+/* Dark mode */
+:root {
+	--sl-color-white: oklch(100% 0 0); /* surface-50 */
+	--sl-color-gray-1: oklch(92.83% 0 287.25deg); /* surface-100 */
+	--sl-color-gray-2: oklch(85.51% 0 286.73deg); /* surface-200 */
+	--sl-color-gray-3: oklch(62.6% 0.01 258.36deg); /* surface-500 */
+	--sl-color-gray-4: oklch(47.73% 0.01 261.77deg); /* surface-700 */
+	--sl-color-gray-5: oklch(31.6% 0.02 262.55deg); /* surface-900 */
+	--sl-color-gray-6: oklch(26.5% 0.025 260deg); /* between surface-900 and surface-950 */
+	--sl-color-black: oklch(22.88% 0.03 258.32deg); /* surface-950 */
+
+	--sl-color-accent-low: oklch(33.76% 0.13 299.57deg); /* primary-950 */
+	--sl-color-accent: oklch(63.71% 0.17 298.81deg); /* primary-400 */
+	--sl-color-accent-high: oklch(79.22% 0.11 306.63deg); /* primary-200 */
+}
+
+/* Light mode */
+:root[data-theme='light'] {
+	--sl-color-white: oklch(22.88% 0.03 258.32deg); /* surface-950 */
+	--sl-color-gray-1: oklch(31.6% 0.02 262.55deg); /* surface-900 */
+	--sl-color-gray-2: oklch(39.92% 0.02 255.6deg); /* surface-800 */
+	--sl-color-gray-3: oklch(47.73% 0.01 261.77deg); /* surface-700 */
+	--sl-color-gray-4: oklch(62.6% 0.01 258.36deg); /* surface-500 */
+	--sl-color-gray-5: oklch(85.51% 0 286.73deg); /* surface-200 */
+	--sl-color-gray-6: oklch(95.5% 0.005 287deg); /* between surface-50 and surface-100 */
+	--sl-color-gray-7: oklch(97.8% 0.003 287deg);
+	--sl-color-black: oklch(100% 0 0); /* surface-50 */
+
+	--sl-color-accent-low: oklch(95.05% 0.04 325.97deg); /* primary-50 */
+	--sl-color-accent: oklch(56.31% 0.21 294.98deg); /* primary-500 */
+	--sl-color-accent-high: oklch(43.11% 0.16 296.99deg); /* primary-800 */
+}
+
+/* Mona typography: system font, heavy headings */
+:root {
+	--sl-font: system-ui, sans-serif;
+}
+
+h1,
+.sl-markdown-content :is(h1, h2, h3, h4, h5, h6) {
+	font-weight: 900;
+}
+
+/* Starlight uses blue for "note" asides; tie them to the accent color instead */
+:root,
+:root[data-theme='light'] {
+	--sl-color-blue-low: var(--sl-color-accent-low);
+	--sl-color-blue: var(--sl-color-accent);
+	--sl-color-blue-high: var(--sl-color-accent-high);
+}

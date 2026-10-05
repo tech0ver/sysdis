@@ -1,0 +1,59 @@
+---
+import { Icon } from '@astrojs/starlight/components';
+---
+
+<!--
+	Replaces Starlight's three-way theme select (dark / light / auto) with a two-way toggle.
+	Until the user picks a theme, the page follows the browser's `prefers-color-scheme`
+	(initial value is set by Starlight's ThemeProvider before paint).
+-->
+<sysdis-theme-toggle>
+	<button type="button" aria-label="Toggle dark mode" title="Toggle dark mode">
+		<Icon name="moon" class="moon" />
+		<Icon name="sun" class="sun" />
+	</button>
+</sysdis-theme-toggle>
+
+<style>
+	button {
+		display: flex;
+		align-items: center;
+		padding: 0.25rem;
+		border: 0;
+		background: none;
+		color: var(--sl-color-gray-1);
+		cursor: pointer;
+	}
+	button:hover {
+		color: var(--sl-color-accent-high);
+	}
+	:global(:root[data-theme='light']) .sun,
+	:global(:root[data-theme='dark']) .moon {
+		display: none;
+	}
+</style>
+
+<script>
+	/** Same key Starlight's ThemeProvider reads on page load. */
+	const storageKey = 'starlight-theme';
+	const root = document.documentElement;
+
+	const hasStoredTheme = () => Boolean(localStorage.getItem(storageKey));
+
+	// Follow the browser's color scheme until the user picks a theme explicitly.
+	matchMedia('(prefers-color-scheme: light)').addEventListener('change', (e) => {
+		if (!hasStoredTheme()) root.dataset.theme = e.matches ? 'light' : 'dark';
+	});
+
+	class SysdisThemeToggle extends HTMLElement {
+		constructor() {
+			super();
+			this.querySelector('button')?.addEventListener('click', () => {
+				const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+				root.dataset.theme = next;
+				localStorage.setItem(storageKey, next);
+			});
+		}
+	}
+	customElements.define('sysdis-theme-toggle', SysdisThemeToggle);
+</script>
