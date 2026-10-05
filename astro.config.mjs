@@ -14,7 +14,12 @@ export default defineConfig({
 			components: {
 				ThemeSelect: './src/components/ThemeToggle.astro',
 			},
-			sidebar: ['foo-bar'],
+			sidebar: [
+				{
+					label: 'Core Concepts',
+					items: ['core-concepts/networking'],
+				},
+			],
 		}),
 	],
 });
