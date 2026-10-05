@@ -10,6 +10,7 @@ export default defineConfig({
 			title: 'System Design',
 			favicon: '/favicon.png',
 			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/tech0ver/sysdis' }],
+			customCss: ['./src/styles/theme.css'],
 			sidebar: ['foo-bar'],
 		}),
 	],
