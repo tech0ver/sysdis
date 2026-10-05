@@ -1,0 +1,39 @@
+# WRITING.md
+
+What an article on this site must look like. Read it before you add or change a page in `src/content/docs/`. For the step-by-step process of writing an article, use the `write-article` skill (`.claude/skills/write-article/`).
+
+## Reader and goal
+
+- The reader already knows system design basics. Do not teach from zero.
+- The goal is to help the reader design a system fast — in about one hour, as in an interview.
+- Each page builds patterns: a default choice, the signals that change it, and the trade-offs.
+- No deep dives, no history, no "why this exists". Keep a detail only if it changes a design decision.
+
+## Language
+
+- Simple English that non-native readers can follow. Short sentences, common words.
+- Define a term the first time it appears, in a few words.
+- Speak to the reader directly ("use", "pick", "say"). No filler and no jokes.
+
+## Fundamentals pages
+
+Fundamentals pages live in `src/content/docs/fundamentals/`. Each page has this shape:
+
+1. **Intro** — one short paragraph: what the topic covers and when it comes up in an interview.
+2. **Sections** — one `##` section per decision. Start with the default choice, then say when to pick something else.
+3. **Comparison tables** — use a table when you compare two or more options.
+4. **Interview tips** — put the exact phrase or move to use in an interview in a `:::tip[In the interview]` aside. One or two per section at most.
+5. **Cheat sheet** — the last section. A short list of the rules from the page, one line each.
+
+## Sources
+
+- The author names the sources for each article: study notes, books, sites, or their own experience.
+- Write everything in your own words. Do not copy text from any source.
+- Other interview prep sites can show what to cover, not how to say it.
+- When sources disagree, ask the author. Do not pick one silently.
+
+## Adding a page
+
+1. Create the Markdown file. Frontmatter needs `title` and `description`.
+2. Add the page to `sidebar` in `astro.config.mjs`, in the right group.
+3. Run `bun run build` and check the page in `bun run dev`.

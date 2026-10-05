@@ -17,10 +17,11 @@ A personal system design knowledge base: articles for interview preparation, pub
 - `src/styles/theme.css` — color theme (based on Skeleton's "Mona"). Change colors here only, through Starlight `--sl-*` variables.
 - `src/components/ThemeToggle.astro` — replaces Starlight's `ThemeSelect`. Two-way dark/light toggle; with no saved choice the site follows `prefers-color-scheme`.
 - `public/favicon.png` — favicon (tech0ver organization logo). The site has no header logo; the header shows the title only.
-- `.claude/settings.json` — enables the [diagram-design](https://github.com/cathrynlavery/diagram-design) plugin for Claude Code. Use it to draw diagrams. Other agents can install the same skill from that repository.
+- `.claude/settings.json` — enables Claude Code plugins: [diagram-design](https://github.com/cathrynlavery/diagram-design) for diagrams and [humanizer](https://github.com/blader/humanizer) for editing text. Other agents can install the same skills from those repositories.
 
 ## Conventions
 
+- To write or rewrite an article, use the `write-article` skill (`.claude/skills/write-article/`). The rules for the result are in [WRITING.md](WRITING.md).
 - Internal links are relative (`../caching/`) so they keep working under `base`.
 - Do not duplicate information between README.md and AGENTS.md: README is for running the project, AGENTS.md is for working on it.
 - Before finishing a change, run `bun run build` — it must pass with no errors.
