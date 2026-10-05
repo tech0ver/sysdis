@@ -16,8 +16,8 @@ export default defineConfig({
 			},
 			sidebar: [
 				{
-					label: 'Core Concepts',
-					items: ['core-concepts/networking'],
+					label: 'Fundamentals',
+					items: ['fundamentals/networking'],
 				},
 			],
 		}),
