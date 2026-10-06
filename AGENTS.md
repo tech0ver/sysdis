@@ -18,7 +18,7 @@ A personal system design knowledge base: articles for interview preparation, pub
 - `src/components/ThemeToggle.astro` — replaces Starlight's `ThemeSelect`. Two-way dark/light toggle; with no saved choice the site follows `prefers-color-scheme`.
 - `src/data/glossary.mjs` — the site glossary, one entry per term. Rules for entries are in WRITING.md.
 - `src/plugins/glossary.mjs` — Markdown plugin that adds a tooltip to the first mention of each glossary term on a page. Astro 7 renders Markdown with Sätteri, so this is a Sätteri hast plugin (set in `markdown.processor` in `astro.config.mjs`), not a remark plugin.
-- `src/components/Glossary.astro` and `src/content/docs/glossary.mdx` — the Glossary page. `src/styles/glossary.css` — tooltip and glossary styles.
+- `src/components/Glossary.astro` and `src/content/docs/glossary.mdx` — the Glossary page. `src/styles/glossary.css` — tooltip and glossary styles. `src/routeData.ts` (Starlight route middleware) builds the page's "On this page" list from the glossary.
 - `public/favicon.png` — favicon (tech0ver organization logo). The site has no header logo; the header shows the title only.
 - `.claude/settings.json` — enables Claude Code plugins: [diagram-design](https://github.com/cathrynlavery/diagram-design) for diagrams and [humanizer](https://github.com/blader/humanizer) for editing text. Other agents can install the same skills from those repositories.
 

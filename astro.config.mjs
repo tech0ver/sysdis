@@ -18,6 +18,7 @@ export default defineConfig({
 			title: 'System Design',
 			favicon: '/favicon.png',
 			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/tech0ver/sysdis' }],
+			routeMiddleware: './src/routeData.ts',
 			customCss: ['./src/styles/theme.css', './src/styles/glossary.css'],
 			components: {
 				ThemeSelect: './src/components/ThemeToggle.astro',
