@@ -104,9 +104,9 @@ export const glossary = [
 	{
 		id: 'three-way-handshake',
 		term: 'Three-way handshake',
-		short: 'The three messages (SYN, SYN-ACK, ACK) that open a TCP connection.',
+		short: 'The three messages that open a TCP connection.',
 		explanation:
-			'Both sides confirm they can reach each other before any data moves. It costs one round trip, which is one reason clients reuse connections.',
+			'The client sends SYN (synchronize: "let\'s connect"), the server answers SYN-ACK ("got it, let\'s connect"), and the client sends ACK (acknowledge: "got it"). This costs one round trip before any data moves, which is one reason clients reuse connections.',
 		readMore: { href: 'https://developer.mozilla.org/en-US/docs/Glossary/TCP_handshake', label: 'MDN: TCP handshake' },
 	},
 	{

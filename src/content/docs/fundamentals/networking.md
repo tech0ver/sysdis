@@ -12,7 +12,7 @@ Every design has boxes connected by arrows. Each arrow is a network call. It nee
 A new HTTPS connection over HTTP/1.1 or HTTP/2 goes through four steps before the response comes back:
 
 1. **DNS** turns the domain name into an IP address. The answer is cached for the time set by its TTL.
-2. **TCP** opens a connection with a three-way handshake (SYN, SYN-ACK, ACK).
+2. **TCP** opens a connection with a three-way handshake.
 3. **TLS** checks the server certificate and agrees on encryption keys.
 4. **HTTP** sends the request and gets the response.
 
