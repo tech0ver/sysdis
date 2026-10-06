@@ -1,0 +1,84 @@
+// Sätteri hast plugin: wraps the first mention of each glossary term on a page
+// in a tooltip. See src/data/glossary.mjs for the terms.
+//
+// Rules:
+// - Only the first mention of a term on a page gets a tooltip.
+// - A page that a term's `readMore` points to explains it in its text, so it gets no tooltip there.
+// - Text inside links, code, headings, and the glossary page itself is left alone.
+// - Matching is exact and case-sensitive on the term's aliases, on whole words.
+
+import { fileURLToPath } from 'node:url';
+
+const SKIP_TAGS = new Set(['a', 'code', 'pre', 'kbd', 'script', 'style', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']);
+
+const escapeHtml = (s) =>
+	s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+const escapeRegExp = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+/** Page slug of a docs file: `src/content/docs/fundamentals/networking.md` → `fundamentals/networking`. */
+function pageSlug(fileURL) {
+	if (!fileURL) return undefined;
+	const path = fileURLToPath(fileURL).replace(/\\/g, '/');
+	const match = path.match(/\/src\/content\/docs\/(.+)\.mdx?$/);
+	if (!match) return undefined;
+	return match[1].replace(/(^|\/)index$/, '');
+}
+
+/** Slug of an internal `readMore.href`, or undefined for external links. */
+function readMoreSlug(href) {
+	if (/^[a-z]+:\/\//i.test(href)) return undefined;
+	return href.split('#')[0].replace(/^\/+|\/+$/g, '');
+}
+
+export function glossaryPlugin({ entries, base = '/' }) {
+	const root = base.endsWith('/') ? base : `${base}/`;
+	const byAlias = new Map();
+	for (const entry of entries) {
+		for (const alias of entry.aliases ?? [entry.term]) byAlias.set(alias, entry);
+	}
+	const aliases = [...byAlias.keys()].sort((a, b) => b.length - a.length);
+	const pattern = new RegExp(`(?<![\\w/.-])(${aliases.map(escapeRegExp).join('|')})(?![\\w/-])`, 'g');
+
+	const tooltip = (entry, text) => {
+		const tipId = `term-tip-${entry.id}`;
+		const name = entry.expansion ? `<span class="term-tip-name">${escapeHtml(entry.expansion)}</span> ` : '';
+		const more = `<a class="term-tip-more" href="${root}glossary/#${entry.id}">More</a>`;
+		return (
+			`<span class="term" tabindex="0" aria-describedby="${tipId}">` +
+			`<span class="term-label">${escapeHtml(text)}</span>` +
+			`<span class="term-tip" role="tooltip" id="${tipId}"><span class="term-tip-card">` +
+			`${name}${escapeHtml(entry.short)} ${more}</span></span></span>`
+		);
+	};
+
+	return (factoryCtx) => {
+		const slug = pageSlug(factoryCtx.fileURL);
+		if (slug === undefined || slug === 'glossary') return null;
+		const used = new Set(entries.filter((e) => e.readMore && readMoreSlug(e.readMore.href) === slug).map((e) => e.id));
+
+		return {
+			name: 'sysdis-glossary',
+			text(node, ctx) {
+				for (let p = ctx.parent(node); p; p = ctx.parent(p)) {
+					if (p.type === 'element' && SKIP_TAGS.has(p.tagName)) return;
+				}
+				const value = node.value;
+				const parts = [];
+				let last = 0;
+				pattern.lastIndex = 0;
+				for (let m; (m = pattern.exec(value)); ) {
+					const entry = byAlias.get(m[1]);
+					if (used.has(entry.id)) continue;
+					used.add(entry.id);
+					if (m.index > last) parts.push({ type: 'text', value: value.slice(last, m.index) });
+					parts.push({ type: 'raw', value: tooltip(entry, m[1]) });
+					last = m.index + m[1].length;
+				}
+				if (parts.length === 0) return;
+				if (last < value.length) parts.push({ type: 'text', value: value.slice(last) });
+				ctx.replaceNode(node, parts);
+			},
+		};
+	};
+}

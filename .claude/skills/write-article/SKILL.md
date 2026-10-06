@@ -42,6 +42,7 @@ Show the outline to the author and wait for approval. This is the step that keep
 - Follow the page shape and language rules in WRITING.md.
 - Write from `sources.md` and `outline.md`, in your own words.
 - Add the page to `sidebar` in `astro.config.mjs` if it is new.
+- Add new terms to the glossary (`src/data/glossary.mjs`) following WRITING.md. If this page explains a term in depth, set the term's `readMore` to this page.
 
 ## 5. Review
 
