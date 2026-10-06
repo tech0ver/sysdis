@@ -4,6 +4,7 @@ import starlight from '@astrojs/starlight';
 import { satteri } from '@astrojs/markdown-satteri';
 import { glossary } from './src/data/glossary.mjs';
 import { glossaryPlugin } from './src/plugins/glossary.mjs';
+import { defaultChipPlugin } from './src/plugins/default-chip.mjs';
 
 const base = '/sysdis';
 
@@ -11,7 +12,7 @@ export default defineConfig({
 	site: 'https://tech0ver.github.io',
 	base,
 	markdown: {
-		processor: satteri({ hastPlugins: [glossaryPlugin({ entries: glossary, base })] }),
+		processor: satteri({ hastPlugins: [glossaryPlugin({ entries: glossary, base }), defaultChipPlugin()] }),
 	},
 	integrations: [
 		starlight({
@@ -19,7 +20,7 @@ export default defineConfig({
 			favicon: '/favicon.png',
 			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/tech0ver/sysdis' }],
 			routeMiddleware: './src/routeData.ts',
-			customCss: ['./src/styles/theme.css', './src/styles/glossary.css'],
+			customCss: ['./src/styles/theme.css', './src/styles/glossary.css', './src/styles/article.css'],
 			components: {
 				ThemeSelect: './src/components/ThemeToggle.astro',
 			},

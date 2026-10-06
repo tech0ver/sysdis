@@ -20,7 +20,7 @@ What an article on this site must look like. Read it before you add or change a 
 Fundamentals pages live in `src/content/docs/fundamentals/`. Each page has this shape:
 
 1. **Intro** — one short paragraph: what the topic covers and when it comes up in an interview.
-2. **Sections** — one `##` section per decision. Start with the default choice, then say when to pick something else.
+2. **Sections** — one `##` section per decision. Start with the default choice as a paragraph that begins with `**Default: …**` (the site shows "Default" as a small chip), then say when to pick something else.
 3. **Comparison tables** — use a table when you compare two or more options.
 4. **Interview tips** — put the exact phrase or move to use in an interview in a `:::tip[In the interview]` aside. One or two per section at most.
 5. **Cheat sheet** — the last section. A short list of the rules from the page, one line each.

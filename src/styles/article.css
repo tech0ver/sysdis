@@ -1,0 +1,19 @@
+/*
+ * Article elements.
+ * A "Default" chip marks the recommended choice of a section (see src/plugins/default-chip.mjs).
+ */
+
+.sl-markdown-content .default-chip {
+	display: inline-block;
+	margin-inline-end: 0.15rem;
+	padding: 0.05rem 0.5rem;
+	border-radius: 999px;
+	background: var(--sl-color-accent);
+	color: var(--sl-color-black);
+	font-size: var(--sl-text-xs);
+	font-weight: 700;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	vertical-align: 0.15em;
+	line-height: 1.5;
+}
