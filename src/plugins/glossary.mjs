@@ -5,7 +5,8 @@
 // - Only the first mention of a term on a page gets a tooltip.
 // - A page that a term's `readMore` points to explains it in its text, so it gets no tooltip there.
 // - Text inside links, code, headings, and the glossary page itself is left alone.
-// - Matching is exact and case-sensitive on the term's aliases, on whole words.
+// - Matching is exact and case-sensitive on the term's aliases, on whole words. Without
+//   aliases, a term also matches with a lowercase first letter ("Failover" finds "failover").
 
 import { fileURLToPath } from 'node:url';
 
@@ -35,7 +36,8 @@ export function glossaryPlugin({ entries, base = '/' }) {
 	const root = base.endsWith('/') ? base : `${base}/`;
 	const byAlias = new Map();
 	for (const entry of entries) {
-		for (const alias of entry.aliases ?? [entry.term]) byAlias.set(alias, entry);
+		const lowerFirst = entry.term[0].toLowerCase() + entry.term.slice(1);
+		for (const alias of entry.aliases ?? [entry.term, lowerFirst]) byAlias.set(alias, entry);
 	}
 	const aliases = [...byAlias.keys()].sort((a, b) => b.length - a.length);
 	const pattern = new RegExp(`(?<![\\w/.-])(${aliases.map(escapeRegExp).join('|')})(?![\\w/-])`, 'g');

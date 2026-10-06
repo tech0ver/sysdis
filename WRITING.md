@@ -30,6 +30,7 @@ Fundamentals pages live in `src/content/docs/fundamentals/`. Each page has this 
 The glossary (`src/data/glossary.mjs`) is the one place where terms are defined. The site shows each entry on the [Glossary](https://tech0ver.github.io/sysdis/glossary/) page, and the first mention of a term on any page gets a tooltip with its short definition.
 
 - Add every term or abbreviation that a reader may not know: protocols, patterns, jargon.
+- `term` keeps the official spelling of names and abbreviations (OpenAPI, GraphQL, gRPC, TCP). Common words start with a capital letter (Failover, Exponential backoff).
 - `short` is one sentence and fits any context. Write "how long a piece of data stays valid", not "how long a DNS answer is cached".
 - `explanation` is two or three sentences: what it is and why it matters in a design.
 - `expansion` is what an abbreviation stands for. Only for abbreviations.

@@ -1,7 +1,10 @@
 // The site glossary. One entry per term.
 //
-// - `term`: the name shown in the glossary.
-// - `aliases`: exact spellings to find in articles (case-sensitive). Defaults to [term].
+// - `term`: the name shown in the glossary. Keep the official spelling of names and
+//   abbreviations (OpenAPI, GraphQL, gRPC, TCP). Start common words with a capital letter
+//   (Failover, Exponential backoff).
+// - `aliases`: exact spellings to find in articles (case-sensitive). Defaults to [term] plus
+//   the same with a lowercase first letter, so "Failover" also finds "failover".
 // - `expansion`: what an abbreviation stands for. Only for abbreviations.
 // - `short`: one sentence that fits any context. Shown in the tooltip.
 // - `explanation`: two or three sentences: what it is and why it matters in a design.
@@ -100,7 +103,7 @@ export const glossary = [
 	},
 	{
 		id: 'three-way-handshake',
-		term: 'three-way handshake',
+		term: 'Three-way handshake',
 		short: 'The three messages (SYN, SYN-ACK, ACK) that open a TCP connection.',
 		explanation:
 			'Both sides confirm they can reach each other before any data moves. It costs one round trip, which is one reason clients reuse connections.',
@@ -134,7 +137,7 @@ export const glossary = [
 	},
 	{
 		id: 'round-trip',
-		term: 'round trip',
+		term: 'Round trip',
 		aliases: ['round trip', 'round trips', 'Round trip'],
 		short: 'The time for a message to reach the other side and for the answer to come back.',
 		explanation:
@@ -143,7 +146,7 @@ export const glossary = [
 	},
 	{
 		id: 'keep-alive',
-		term: 'keep-alive',
+		term: 'Keep-alive',
 		short: 'Keeping a connection open after a response, so the next request can reuse it.',
 		explanation:
 			'Reusing a connection skips the TCP and TLS handshakes. Clients and servers close idle connections after a timeout.',
@@ -151,7 +154,7 @@ export const glossary = [
 	},
 	{
 		id: 'connection-pool',
-		term: 'connection pool',
+		term: 'Connection pool',
 		aliases: ['connection pool', 'connection pools'],
 		short: 'A set of open connections that a client keeps and reuses.',
 		explanation:
@@ -160,7 +163,7 @@ export const glossary = [
 	},
 	{
 		id: 'failover',
-		term: 'failover',
+		term: 'Failover',
 		short: 'Switching to a backup when the main server or system fails.',
 		explanation:
 			'Failover can be automatic or manual. How fast it works depends on how quickly the failure is detected and how quickly clients learn the new address.',
@@ -240,7 +243,7 @@ export const glossary = [
 	},
 	{
 		id: 'persisted-queries',
-		term: 'persisted queries',
+		term: 'Persisted queries',
 		short: 'GraphQL queries stored on the server in advance, so the client sends only an ID.',
 		explanation:
 			'Requests become small and can be sent as GET, so HTTP caches and CDNs can store the responses. The server can also refuse any query it does not know.',
@@ -248,7 +251,7 @@ export const glossary = [
 	},
 	{
 		id: 'rate-limit',
-		term: 'rate limit',
+		term: 'Rate limit',
 		aliases: ['rate limit', 'rate limits', 'Rate limits'],
 		short: 'A cap on how many requests a client may send in a period of time.',
 		explanation: 'Rate limits protect a service from overload and abuse. Requests over the limit usually get HTTP 429.',
@@ -256,7 +259,7 @@ export const glossary = [
 	},
 	{
 		id: 'idempotent',
-		term: 'idempotent',
+		term: 'Idempotent',
 		aliases: ['idempotent', 'Idempotent'],
 		short: 'An operation is idempotent if doing it twice leaves the same result as doing it once.',
 		explanation:
@@ -265,7 +268,7 @@ export const glossary = [
 	},
 	{
 		id: 'idempotency-key',
-		term: 'idempotency key',
+		term: 'Idempotency key',
 		aliases: ['idempotency key', 'idempotency keys', 'Idempotency keys'],
 		short: 'A unique ID the client attaches to a request, so the server can recognize a retry of it.',
 		explanation:
@@ -282,14 +285,14 @@ export const glossary = [
 	},
 	{
 		id: 'polling',
-		term: 'polling',
+		term: 'Polling',
 		short: 'The client asks the server for new data again and again on a timer.',
 		explanation: 'Polling is simple and works everywhere. The cost is delay (up to one interval) and many empty requests.',
 		readMore: networking('pushing-updates-to-clients', 'Pushing updates to clients'),
 	},
 	{
 		id: 'long-polling',
-		term: 'long polling',
+		term: 'Long polling',
 		aliases: ['long polling', 'Long polling'],
 		short: 'The server holds a request open until it has new data or a timeout, then the client asks again.',
 		explanation: 'Long polling gives near real-time updates over plain HTTP, without new infrastructure.',
@@ -349,7 +352,7 @@ export const glossary = [
 	},
 	{
 		id: 'signaling-server',
-		term: 'signaling server',
+		term: 'Signaling server',
 		short: 'A server that passes connection details between peers before they connect directly.',
 		explanation: 'WebRTC does not define how signaling works. Apps often use WebSocket for it.',
 		readMore: { href: 'https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API/Signaling_and_video_calling', label: 'MDN: Signaling and video calling' },
@@ -364,7 +367,7 @@ export const glossary = [
 	},
 	{
 		id: 'pub-sub',
-		term: 'pub/sub',
+		term: 'Pub/sub',
 		expansion: 'publish-subscribe',
 		short: 'A messaging pattern where publishers send messages to a channel and every subscriber gets a copy.',
 		explanation:
@@ -380,7 +383,7 @@ export const glossary = [
 	},
 	{
 		id: 'heartbeat',
-		term: 'heartbeat',
+		term: 'Heartbeat',
 		aliases: ['heartbeat', 'heartbeats', 'Heartbeats'],
 		short: 'A small message sent on a timer to show a connection or process is still alive.',
 		explanation: 'If heartbeats stop, the other side treats the peer as dead. They also stop proxies from closing idle connections.',
@@ -388,14 +391,14 @@ export const glossary = [
 	},
 	{
 		id: 'backpressure',
-		term: 'backpressure',
+		term: 'Backpressure',
 		short: 'What happens when a receiver cannot keep up and data piles up on the way to it.',
 		explanation: 'A system handles backpressure by slowing the sender, buffering a bounded amount, or dropping data.',
 		readMore: networking('running-long-lived-connections-at-scale', 'Running long-lived connections at scale'),
 	},
 	{
 		id: 'load-balancer',
-		term: 'load balancer',
+		term: 'Load balancer',
 		aliases: ['load balancer', 'load balancers'],
 		short: 'A component that spreads incoming traffic across several servers.',
 		explanation: 'It also stops sending traffic to servers that fail health checks, so clients see one stable address.',
@@ -418,7 +421,7 @@ export const glossary = [
 	},
 	{
 		id: 'round-robin',
-		term: 'round robin',
+		term: 'Round robin',
 		aliases: ['round robin', 'Round robin'],
 		short: 'Sending each new request to the next server in turn.',
 		explanation: 'Round robin is simple and works well when requests cost about the same.',
@@ -426,7 +429,7 @@ export const glossary = [
 	},
 	{
 		id: 'least-connections',
-		term: 'least connections',
+		term: 'Least connections',
 		aliases: ['least connections', 'Least connections'],
 		short: 'Sending each new connection to the server with the fewest open connections.',
 		explanation: 'Good for long-lived connections such as WebSockets, where round robin can leave some servers overloaded.',
@@ -434,7 +437,7 @@ export const glossary = [
 	},
 	{
 		id: 'consistent-hashing',
-		term: 'consistent hashing',
+		term: 'Consistent hashing',
 		short: 'A way to map keys to servers so that adding or removing a server moves only a few keys.',
 		explanation:
 			'With plain hash mod N, changing N moves most keys. Consistent hashing places keys and servers on a ring, so a change touches only its neighbors. Used for sharding and per-key routing.',
@@ -442,7 +445,7 @@ export const glossary = [
 	},
 	{
 		id: 'health-check',
-		term: 'health check',
+		term: 'Health check',
 		aliases: ['health check', 'health checks', 'Health checks'],
 		short: 'A regular probe that tells whether a server can take traffic.',
 		explanation: 'Load balancers remove servers that fail several checks in a row and add them back after several successes.',
@@ -450,7 +453,7 @@ export const glossary = [
 	},
 	{
 		id: 'connection-draining',
-		term: 'connection draining',
+		term: 'Connection draining',
 		aliases: ['connection draining', 'Connection draining'],
 		short: 'Letting a server finish its current requests before it is removed.',
 		explanation: 'The load balancer stops sending new work to the server, then removes it once current work is done or a timeout passes.',
@@ -458,7 +461,7 @@ export const glossary = [
 	},
 	{
 		id: 'sticky-sessions',
-		term: 'sticky sessions',
+		term: 'Sticky sessions',
 		aliases: ['sticky sessions', 'Sticky sessions'],
 		short: 'Sending all requests from one client to the same server.',
 		explanation: 'It keeps server-local state usable, but makes failover and rebalancing harder.',
@@ -466,7 +469,7 @@ export const glossary = [
 	},
 	{
 		id: 'service-discovery',
-		term: 'service discovery',
+		term: 'Service discovery',
 		short: 'A way for services to find the current addresses of other services.',
 		explanation: 'Instances register themselves, and clients ask the registry for healthy instances. Used with client-side load balancing.',
 		readMore: { href: 'https://en.wikipedia.org/wiki/Service_discovery', label: 'Wikipedia: Service discovery' },
@@ -481,7 +484,7 @@ export const glossary = [
 	},
 	{
 		id: 'deadline',
-		term: 'deadline',
+		term: 'Deadline',
 		aliases: ['deadline', 'deadlines'],
 		short: 'The latest time by which a whole request must finish.',
 		explanation: 'Each service passes the remaining time to the services it calls, so no one keeps working on a request the user already gave up on.',
@@ -489,21 +492,21 @@ export const glossary = [
 	},
 	{
 		id: 'exponential-backoff',
-		term: 'exponential backoff',
+		term: 'Exponential backoff',
 		short: 'Waiting longer after each failed try, for example 100 ms, 200 ms, 400 ms.',
 		explanation: 'It gives a struggling service time to recover. Combine it with jitter and a cap on tries.',
 		readMore: networking('when-a-call-fails', 'When a call fails'),
 	},
 	{
 		id: 'jitter',
-		term: 'jitter',
+		term: 'Jitter',
 		short: 'A random extra wait added before a retry.',
 		explanation: 'Without jitter, many clients retry at the same moment and overload the service again.',
 		readMore: networking('when-a-call-fails', 'When a call fails'),
 	},
 	{
 		id: 'circuit-breaker',
-		term: 'circuit breaker',
+		term: 'Circuit breaker',
 		aliases: ['circuit breaker', 'Circuit breaker'],
 		short: 'A guard that stops calls to a failing dependency for a while and fails fast instead.',
 		explanation: 'It has three states: closed (calls pass), open (calls fail fast), and half-open (a few test calls). It keeps one failure from spreading.',
@@ -511,7 +514,7 @@ export const glossary = [
 	},
 	{
 		id: 'load-shedding',
-		term: 'load shedding',
+		term: 'Load shedding',
 		aliases: ['load shedding', 'Load shedding', 'shed load'],
 		short: 'Rejecting part of the requests on purpose when a service is overloaded.',
 		explanation: 'Fast rejections keep the service working for the rest of the traffic, instead of slowing down for everyone.',
