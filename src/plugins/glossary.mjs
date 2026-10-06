@@ -1,5 +1,5 @@
 // Sätteri hast plugin: wraps the first mention of each glossary term on a page
-// in a tooltip. See src/data/glossary.mjs for the terms.
+// in a tooltip that shows the whole glossary entry and its Read more link. See src/data/glossary.mjs for the terms.
 //
 // Rules:
 // - Only the first mention of a term on a page gets a tooltip.
@@ -42,15 +42,23 @@ export function glossaryPlugin({ entries, base = '/' }) {
 	const aliases = [...byAlias.keys()].sort((a, b) => b.length - a.length);
 	const pattern = new RegExp(`(?<![\\w/.-])(${aliases.map(escapeRegExp).join('|')})(?![\\w/-])`, 'g');
 
+	const readMoreLink = (readMore) => {
+		if (!readMore) return '';
+		const external = /^[a-z]+:\/\//i.test(readMore.href);
+		const href = external ? readMore.href : `${root}${readMore.href}`;
+		const attrs = external ? ' target="_blank" rel="noopener"' : '';
+		return `<span class="term-tip-more">Read more: <a href="${escapeHtml(href)}"${attrs}>${escapeHtml(readMore.label)}</a></span>`;
+	};
+
 	const tooltip = (entry, text) => {
 		const tipId = `term-tip-${entry.id}`;
-		const name = entry.expansion ? `<span class="term-tip-name">${escapeHtml(entry.expansion)}</span> ` : '';
-		const more = `<a class="term-tip-more" href="${root}glossary/#${entry.id}">More</a>`;
+		const name = `<span class="term-tip-name">${escapeHtml(entry.expansion ?? entry.term)}</span>`;
 		return (
 			`<span class="term" tabindex="0" aria-describedby="${tipId}">` +
 			`<span class="term-label">${escapeHtml(text)}</span>` +
 			`<span class="term-tip" role="tooltip" id="${tipId}"><span class="term-tip-card">` +
-			`${name}${escapeHtml(entry.short)} ${more}</span></span></span>`
+			`${name}<span class="term-tip-text">${escapeHtml(entry.short)} ${escapeHtml(entry.explanation)}</span>` +
+			`${readMoreLink(entry.readMore)}</span></span></span>`
 		);
 	};
 

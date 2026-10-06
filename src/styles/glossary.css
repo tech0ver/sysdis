@@ -25,7 +25,7 @@
 	left: 0;
 	z-index: 20;
 	width: max-content;
-	max-width: min(20rem, 85vw);
+	max-width: min(24rem, 85vw);
 	padding-top: 0.4rem; /* keeps the hover area continuous between the term and the card */
 	visibility: hidden;
 	opacity: 0;
@@ -54,8 +54,14 @@
 	font-weight: 600;
 }
 
+.sl-markdown-content .term-tip-text {
+	display: block;
+}
+
 .sl-markdown-content .term-tip-more {
-	white-space: nowrap;
+	display: block;
+	margin-top: 0.4rem;
+	color: var(--sl-color-gray-2);
 }
 
 .sl-markdown-content .term:hover .term-tip,
