@@ -33,7 +33,7 @@ Then add links from the new article to the existing ones, and update `readMore` 
 Listed in the planned reading order. Each article tells the story of one system as it grows, where each solution brings the next problem, and ends with the problem the next article solves.
 
 - `fundamentals/networking` — How components talk over a network: client and server, IP and DNS, TCP and UDP, TLS, HTTP, pushing updates, load balancing, stateless servers, regions and CDN, failed calls.
-- `fundamentals/storage-engines` — How one node stores and finds data, built up from a plain file: append-only log, hash index, segments and compaction, crash recovery, SSTable and LSM-tree, Bloom filters, B-tree, write-ahead log, secondary and composite indexes and their cost, row and column storage, OLTP and OLAP. No concurrent access here.
+- `fundamentals/storage-engines` — How one node stores and finds data, built up from a plain file: append-only log, hash index, segments and compaction, crash recovery and when a write is durable, keeping all data in memory versus on disk, SSTable and LSM-tree, Bloom filters, B-tree, write-ahead log, B-tree versus LSM-tree, secondary, composite, and covering indexes and their cost, row and column storage, OLTP and OLAP. No concurrent access here.
 - `fundamentals/databases` — What shape to give data and where to keep it: relational, document, key-value, wide-column, graph, and time-series models; schema, normalization and denormalization; designing from access patterns; object storage for files; search indexes; using several databases at once. Ends where one machine is not enough.
 - `fundamentals/transactions` — Keeping data correct under concurrent access and crashes on one node: lost updates, atomic operations, ACID, isolation levels and their anomalies, snapshot isolation and MVCC, write skew, optimistic and pessimistic locking.
 - `fundamentals/replication` — Copies of data across nodes and regions: leader and followers, multi-leader, leaderless and quorums, replication lag, stale reads, eventual consistency, read-your-writes and monotonic reads, failover.
@@ -61,6 +61,7 @@ The word means different things in different articles. Each article says which o
 - `patterns/real-time` — Long-lived connections at scale: routing messages between servers, reconnect and replay, heartbeats, slow clients, presence.
 - `patterns/api-gateway` — One entry point for clients: API gateway, BFF, auth, routing, response composition.
 - `patterns/service-discovery` — Service registry, client-side load balancing, service mesh.
+- `patterns/proximity-search` — Finding things near a point: why a regular index fails in two dimensions, geohash, quadtree, R-tree.
 - `patterns/async-messaging` — Queues in a design: 202 Accepted and background work, transactional outbox, fan-out.
 
 ## Technologies
@@ -69,3 +70,10 @@ The word means different things in different articles. Each article says which o
 - `technologies/load-balancers` — Forward and reverse proxies, balancing algorithms in depth, sticky sessions, hash routing, connection draining; NGINX, Envoy, HAProxy.
 - `technologies/cdn` — How a CDN works, anycast routing to a nearby edge, what to cache on it, invalidation.
 - `technologies/webrtc` — How WebRTC connects peers: NAT, STUN, TURN, signaling.
+- `technologies/postgresql` — PostgreSQL: B-tree storage, index types, when to pick it.
+- `technologies/mysql` — MySQL with InnoDB: clustered primary key, when to pick it.
+- `technologies/cassandra` — Cassandra: LSM-tree storage, partition and clustering keys, write-heavy workloads.
+- `technologies/rocksdb` — RocksDB: an embedded LSM-tree engine used inside other databases.
+- `technologies/redis` — Redis: an in-memory store, its data structures, persistence settings, use as a cache or as the main store.
+- `technologies/memcached` — Memcached: a cache-only in-memory store.
+- `technologies/elasticsearch` — Elasticsearch: full-text search with an inverted index.
