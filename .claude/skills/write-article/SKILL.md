@@ -1,56 +1,73 @@
 ---
 name: write-article
-description: Write a new article for this site, or rewrite an existing one, from the author's sources. Use when the user asks to write, draft, rewrite, or improve an article or page in src/content/docs/. Walks through sources, a decision outline the author approves, a draft, and review passes.
+description: Write a new article for this site, or rewrite an existing one, from the author's sources. Use when the user asks to write, draft, rewrite, or improve an article or page in src/content/docs/. Walks through sources, a story plan the author approves, block-by-block drafting with author feedback, review, diagrams, and links between articles.
 ---
 
 # Write an article
 
-This skill is the process. [WRITING.md](../../../WRITING.md) is the standard the result must meet. Read WRITING.md first, then follow the steps in order. Do not skip the approval in step 3.
+This skill is the process. [WRITING.md](../../../WRITING.md) is the standard the result must meet. Read WRITING.md first, then follow the steps in order. Do not skip the approvals in steps 3 and 4.
 
-Keep working notes in `.agents/<article-slug>/` (git-ignored): `sources.md` and `outline.md`. They let a later session continue the work.
+The article is written together with the author, block by block. The author's feedback on each block is the main source of quality: expect several rounds and keep every rule they give you.
+
+Keep working notes in `.agents/<article-slug>/` (git-ignored): `sources.md`, `plan.md`, review files, and backups of replaced files. They let a later session continue the work. Log decisions and progress in `plan.md` as you go.
 
 ## 1. Agree on the scope
 
 Ask the author, or confirm from the request:
 
 - The topic and the target page (new file, or an existing one to rewrite).
-- The sources for this article. They differ per article: study notes (for example Notion pages), books, sites, the author's own experience.
+- The sources for this article: study notes (for example Notion pages), books, sites, the author's own experience. Other interview prep sites only show what to cover.
 - Anything that must be in the article, or must stay out.
 
-If the author gives no sources, propose some and wait for an answer.
+Read [ARTICLES.md](../../../ARTICLES.md): it says which topics belong to this article and which belong to others. If the author gives no sources, propose some and wait for an answer.
 
 ## 2. Collect from the sources
 
 - Read every source the author named. If a source has its own reading guide (for example an instructions page in a notes workspace), follow it.
-- Write the facts to `sources.md`, grouped by subtopic. For each fact, note the source.
-- Keep only facts that change a design decision in an interview: a default choice, a signal to pick something else, a trade-off, a number, or a common mistake. Drop internals, history, and "why it exists".
+- Write the facts to `sources.md`, grouped by subtopic, with the source of each fact.
+- Keep facts that change a design decision: a default choice, a signal to pick something else, a trade-off, a number, a common mistake. Drop internals, history, and "why it exists".
 - List conflicts between sources and open questions separately.
 
-## 3. Build the decision outline and get approval
+## 3. Plan the story and get approval
 
-Before writing any prose, write `outline.md`:
+Write `plan.md` before any prose:
 
-- The decisions the reader makes on this topic in an interview, one per line. Each becomes a `##` section.
-- For each decision: the default, the signals that change it, and the key trade-off — one line each.
-- What is left out on purpose, with a short reason.
-- The conflicts and open questions from step 2.
+- **Running example.** One compact system that naturally runs into every problem of the topic, and why it fits.
+- **Story.** The blocks in order, one line each: the problem the example meets, the solutions, and the next problem it leads to. Each block becomes a `##` section.
+- **Scope.** What is in, what is out and why, and which article in ARTICLES.md gets each boundary topic.
+- **Open questions** from step 2.
 
-Show the outline to the author and wait for approval. This is the step that keeps the article focused: every section must answer a decision from the approved outline. If something does not fit a decision, it does not go in the article.
+Show the plan to the author and wait for approval. Add new planned articles to ARTICLES.md.
 
-## 4. Write the draft
+## 4. Write block by block
 
-- Follow the page shape and language rules in WRITING.md.
-- Write from `sources.md` and `outline.md`, in your own words.
-- Add the page to `sidebar` in `astro.config.mjs` if it is new.
+- Write the first blocks one at a time, and later ones in groups of two or three; a disputed block goes alone.
+- Before showing a block: run the `humanizer` skill on it (if a suggestion breaks WRITING.md, WRITING.md wins), run `bun run build`, and check the page in a preview.
+- Wait for the author's feedback and fix the block before moving on.
+- Every style remark from the author becomes a rule in `plan.md`. If the rule applies to any article, add it to WRITING.md too.
+- Check claims against the sources. When the author questions a fact, check the sources before answering.
+- Where a topic belongs to another article, write one line and put a hidden link marker (see WRITING.md, "Other articles").
 
-## 5. Review
+## 5. Finish the text
 
-Run these passes in order and fix what they find:
+1. **Intro and cheat sheet.** Write them after all blocks are approved (WRITING.md, "Article shape").
+2. **Glossary pass.** Add missing terms, point `readMore` of the terms this article explains to its sections, fix entries that disagree with the text, remove unused ones. Then check the built page: each tooltip must be on a first mention, and no term the page explains may have one. Delete `node_modules/.astro/data-store.json` before the build, or the page keeps old tooltips.
+3. **External review.** Ask a reviewer with fresh context (a subagent, or another model in a separate thread) to check accuracy, story, interview value, and language, and to answer for each block: what to pick by default and when to pick something else. Triage every finding with the author (apply, soften, defer to another article, or reject) and show the triage before you apply anything. A second round checks the fixes.
 
-1. **Humanizer.** Run the `humanizer` skill on the draft to remove AI writing patterns. If its suggestions break a WRITING.md rule (for example, simple English), WRITING.md wins.
-2. **Fresh reader.** Start a subagent that gets only the article file and this task: "You are preparing for a system design interview. Using only this page, answer: what do you pick by default for each decision, and when do you pick something else? List anything unclear, missing, or contradictory." Compare its answers with the outline. Fix gaps in the article, not in the outline.
-3. **Build.** Run `bun run build`; it must pass.
+## 6. Diagrams
 
-## 6. Hand over
+1. Read the whole article and propose where diagrams help: what each one shows (a difference, an evolution, or how something works) and why. Agree on the list with the author.
+2. Draw one diagram as a style sample and get the author's approval before drawing the rest. The `diagram-design` skill helps with layout, but the result must follow WRITING.md, "Diagrams": an SVG in `src/diagrams/` with `dg-*` classes, not a standalone HTML file.
+3. Check every diagram in both themes and at phone width (take screenshots of the built page), then show them to the author.
+4. Before showing the set, check that all diagrams follow the same rules, especially the accent.
+
+## 7. Link the articles
+
+- Find markers that point to this article and turn them into relative links: `grep -rn "link: <this-article-path>" src/content/docs`.
+- Link from this article to existing articles instead of leaving markers for them.
+- Point `readMore` of the terms this article explains to its sections.
+- Mark the article as written in ARTICLES.md.
+
+## 8. Hand over
 
 Tell the author what changed, which open questions are left, and how to view the page with `bun run dev`. Then follow the change workflow in AGENTS.md.

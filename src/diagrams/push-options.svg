@@ -1,0 +1,85 @@
+<svg class="diagram-svg" viewBox="0 0 720 456" role="img" aria-labelledby="push-options-title push-options-desc" xmlns="http://www.w3.org/2000/svg">
+  <title id="push-options-title">Four ways to push a new message</title>
+  <desc id="push-options-desc">Polling, long polling, SSE and WebSocket on one timeline. With polling, a new message waits for the next request. Long polling, SSE and WebSocket deliver it at once. WebSocket also carries data from the app in both directions on the same open connection; with SSE, the app sends data in separate HTTP requests.</desc>
+  <defs>
+    <marker id="push-options-head" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path class="dg-head" d="M0,0 L8,4 L0,8 z"/></marker>
+    <marker id="push-options-head-accent" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path class="dg-head-accent" d="M0,0 L8,4 L0,8 z"/></marker>
+  </defs>
+  <!-- Top: the moment the message reaches the server, and the time axis -->
+  <text class="dg-mono dg-accent-text" x="400" y="20" text-anchor="middle">NEW MESSAGE ON THE SERVER</text>
+  <text class="dg-mono dg-muted-text" x="704" y="20" text-anchor="end">TIME →</text>
+  <!-- Open requests and connections -->
+  <rect class="dg-open" x="224" y="156" width="176" height="44"/>
+  <rect class="dg-open" x="414" y="156" width="290" height="44"/>
+  <rect class="dg-open" x="224" y="248" width="480" height="44"/>
+  <rect class="dg-open" x="224" y="340" width="480" height="44"/>
+  <!-- App and server lines -->
+  <line class="dg-line" x1="200" y1="64" x2="704" y2="64"/>
+  <line class="dg-line" x1="200" y1="108" x2="704" y2="108"/>
+  <line class="dg-line" x1="200" y1="156" x2="704" y2="156"/>
+  <line class="dg-line" x1="200" y1="200" x2="704" y2="200"/>
+  <line class="dg-line" x1="200" y1="248" x2="704" y2="248"/>
+  <line class="dg-line" x1="200" y1="292" x2="704" y2="292"/>
+  <line class="dg-line" x1="200" y1="340" x2="704" y2="340"/>
+  <line class="dg-line" x1="200" y1="384" x2="704" y2="384"/>
+  <!-- The same moment in every lane -->
+  <line class="dg-guide" x1="400" y1="28" x2="400" y2="396"/>
+  <!-- Polling: a request every interval; the message waits for the next one -->
+  <line class="dg-wait" x1="400" y1="108" x2="504" y2="108"/>
+  <text class="dg-mono dg-accent-text" x="452" y="96" text-anchor="middle">WAITS</text>
+  <line class="dg-arrow" x1="224" y1="64" x2="224" y2="108" marker-end="url(#push-options-head)"/>
+  <line class="dg-arrow dg-empty" x1="238" y1="108" x2="238" y2="64" marker-end="url(#push-options-head)"/>
+  <line class="dg-arrow" x1="364" y1="64" x2="364" y2="108" marker-end="url(#push-options-head)"/>
+  <line class="dg-arrow dg-empty" x1="378" y1="108" x2="378" y2="64" marker-end="url(#push-options-head)"/>
+  <line class="dg-arrow" x1="504" y1="64" x2="504" y2="108" marker-end="url(#push-options-head)"/>
+  <line class="dg-arrow dg-message" x1="518" y1="108" x2="518" y2="64" marker-end="url(#push-options-head-accent)"/>
+  <line class="dg-arrow" x1="644" y1="64" x2="644" y2="108" marker-end="url(#push-options-head)"/>
+  <line class="dg-arrow dg-empty" x1="658" y1="108" x2="658" y2="64" marker-end="url(#push-options-head)"/>
+  <!-- Long polling: the request is held until the message, then the app asks again -->
+  <line class="dg-arrow" x1="224" y1="156" x2="224" y2="200" marker-end="url(#push-options-head)"/>
+  <line class="dg-arrow dg-message" x1="400" y1="200" x2="400" y2="156" marker-end="url(#push-options-head-accent)"/>
+  <line class="dg-arrow" x1="414" y1="156" x2="414" y2="200" marker-end="url(#push-options-head)"/>
+  <!-- SSE: one open response, events go only to the app -->
+  <line class="dg-arrow" x1="224" y1="248" x2="224" y2="292" marker-end="url(#push-options-head)"/>
+  <line class="dg-arrow dg-message" x1="400" y1="292" x2="400" y2="248" marker-end="url(#push-options-head-accent)"/>
+  <line class="dg-arrow" x1="600" y1="292" x2="600" y2="248" marker-end="url(#push-options-head)"/>
+  <!-- WebSocket: one open connection, both sides send at any time -->
+  <line class="dg-arrow" x1="224" y1="340" x2="224" y2="384" marker-end="url(#push-options-head)"/>
+  <line class="dg-arrow" x1="300" y1="340" x2="300" y2="384" marker-end="url(#push-options-head)"/>
+  <line class="dg-arrow dg-message" x1="400" y1="384" x2="400" y2="340" marker-end="url(#push-options-head-accent)"/>
+  <line class="dg-arrow" x1="520" y1="340" x2="520" y2="384" marker-end="url(#push-options-head)"/>
+  <line class="dg-arrow" x1="620" y1="384" x2="620" y2="340" marker-end="url(#push-options-head)"/>
+  <!-- The message reaches the server at the same moment in every lane -->
+  <circle class="dg-dot" cx="400" cy="108" r="4"/>
+  <circle class="dg-dot" cx="400" cy="200" r="4"/>
+  <circle class="dg-dot" cx="400" cy="292" r="4"/>
+  <circle class="dg-dot" cx="400" cy="384" r="4"/>
+  <!-- Lane names -->
+  <text class="dg-name" x="0" y="84">Polling</text>
+  <text class="dg-sub" x="0" y="100">a request per check</text>
+  <text class="dg-name" x="0" y="176">Long polling</text>
+  <text class="dg-sub" x="0" y="192">the request is held</text>
+  <text class="dg-name" x="0" y="268">SSE</text>
+  <text class="dg-sub" x="0" y="284">one open response</text>
+  <text class="dg-name" x="0" y="360">WebSocket</text>
+  <text class="dg-sub" x="0" y="376">one open connection</text>
+  <!-- Row labels -->
+  <text class="dg-mono dg-muted-text" x="192" y="67" text-anchor="end">APP</text>
+  <text class="dg-mono dg-muted-text" x="192" y="111" text-anchor="end">SERVER</text>
+  <text class="dg-mono dg-muted-text" x="192" y="159" text-anchor="end">APP</text>
+  <text class="dg-mono dg-muted-text" x="192" y="203" text-anchor="end">SERVER</text>
+  <text class="dg-mono dg-muted-text" x="192" y="251" text-anchor="end">APP</text>
+  <text class="dg-mono dg-muted-text" x="192" y="295" text-anchor="end">SERVER</text>
+  <text class="dg-mono dg-muted-text" x="192" y="343" text-anchor="end">APP</text>
+  <text class="dg-mono dg-muted-text" x="192" y="387" text-anchor="end">SERVER</text>
+  <!-- Legend -->
+  <line class="dg-rule" x1="0" y1="412" x2="720" y2="412"/>
+  <line class="dg-arrow" x1="208" y1="428" x2="208" y2="444" marker-end="url(#push-options-head)"/>
+  <text class="dg-legend" x="220" y="440">request or data</text>
+  <line class="dg-arrow dg-empty" x1="344" y1="444" x2="344" y2="428" marker-end="url(#push-options-head)"/>
+  <text class="dg-legend" x="356" y="440">empty response</text>
+  <circle class="dg-dot" cx="484" cy="436" r="4"/>
+  <text class="dg-legend dg-accent-text" x="496" y="440">new message</text>
+  <rect class="dg-open" x="592" y="430" width="20" height="12"/>
+  <text class="dg-legend" x="620" y="440">kept open</text>
+</svg>

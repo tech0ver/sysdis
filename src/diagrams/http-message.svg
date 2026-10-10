@@ -1,0 +1,32 @@
+<svg class="diagram-svg" viewBox="0 0 412 328" role="img" aria-labelledby="http-message-title http-message-desc" xmlns="http://www.w3.org/2000/svg">
+  <title id="http-message-title">An HTTP request and response</title>
+  <desc id="http-message-desc">The request POST /messages has a method and path, headers with the host, the user's token, the content type and length, and a JSON body with the message. The response has the status code 201 Created, headers, and a JSON body with the new message ID.</desc>
+  <!-- Request -->
+  <text class="dg-name" x="0" y="16">Request</text>
+  <rect class="dg-code-box" x="0" y="28" width="272" height="142" rx="6"/>
+  <text class="dg-code" x="16" y="50">POST /messages HTTP/1.1</text>
+  <text class="dg-code" x="16" y="68">Host: api.example.com</text>
+  <text class="dg-code" x="16" y="86">Authorization: Bearer eyJhbGciOi…</text>
+  <text class="dg-code" x="16" y="104">Content-Type: application/json</text>
+  <text class="dg-code" x="16" y="122">Content-Length: 26</text>
+  <text class="dg-code" x="16" y="158">{"chat": 42, "text": "Hi"}</text>
+  <path class="dg-arrow" d="M288 41 H294 V54 H288"/>
+  <text class="dg-sub" x="308" y="51">method and path</text>
+  <path class="dg-arrow" d="M288 59 H294 V126 H288"/>
+  <text class="dg-sub" x="308" y="96">headers</text>
+  <path class="dg-arrow" d="M288 149 H294 V162 H288"/>
+  <text class="dg-sub" x="308" y="159">body</text>
+  <!-- Response -->
+  <text class="dg-name" x="0" y="202">Response</text>
+  <rect class="dg-code-box" x="0" y="214" width="272" height="106" rx="6"/>
+  <text class="dg-code" x="16" y="236">HTTP/1.1 201 Created</text>
+  <text class="dg-code" x="16" y="254">Content-Type: application/json</text>
+  <text class="dg-code" x="16" y="272">Content-Length: 12</text>
+  <text class="dg-code" x="16" y="308">{"id": 1001}</text>
+  <path class="dg-arrow" d="M288 227 H294 V240 H288"/>
+  <text class="dg-sub" x="308" y="237">status code</text>
+  <path class="dg-arrow" d="M288 245 H294 V276 H288"/>
+  <text class="dg-sub" x="308" y="264">headers</text>
+  <path class="dg-arrow" d="M288 299 H294 V312 H288"/>
+  <text class="dg-sub" x="308" y="309">body</text>
+</svg>

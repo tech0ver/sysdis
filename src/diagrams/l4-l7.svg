@@ -1,0 +1,38 @@
+<svg class="diagram-svg" viewBox="0 0 720 236" role="img" aria-labelledby="l4-l7-title l4-l7-desc" xmlns="http://www.w3.org/2000/svg">
+  <title id="l4-l7-title">L4 and L7 load balancers</title>
+  <desc id="l4-l7-desc">An L4 balancer sees only the address and port and passes the encrypted connection to a server, which decrypts it. An L7 balancer decrypts the traffic, reads each HTTP request, and routes /messages and /photos to different servers.</desc>
+  <defs>
+    <marker id="l4-l7-head" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path class="dg-head" d="M0,0 L8,4 L0,8 z"/></marker>
+    <marker id="l4-l7-head-accent" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path class="dg-head-accent" d="M0,0 L8,4 L0,8 z"/></marker>
+  </defs>
+  <!-- L4 -->
+  <line class="dg-arrow" x1="104" y1="48" x2="184" y2="48" marker-end="url(#l4-l7-head)"/>
+  <text class="dg-mono dg-muted-text" x="144" y="40" text-anchor="middle">ENCRYPTED</text>
+  <line class="dg-arrow" x1="328" y1="48" x2="480" y2="48" marker-end="url(#l4-l7-head)"/>
+  <text class="dg-mono dg-muted-text" x="404" y="40" text-anchor="middle">ENCRYPTED</text>
+  <!-- L7 -->
+  <line class="dg-arrow" x1="104" y1="168" x2="184" y2="168" marker-end="url(#l4-l7-head)"/>
+  <text class="dg-mono dg-muted-text" x="144" y="160" text-anchor="middle">ENCRYPTED</text>
+  <path class="dg-arrow dg-message" d="M328 156 H372 Q380 156 380 148 V136 Q380 128 388 128 H480" marker-end="url(#l4-l7-head-accent)"/>
+  <text class="dg-mono dg-accent-text" x="434" y="120" text-anchor="middle">/messages</text>
+  <path class="dg-arrow dg-message" d="M328 180 H372 Q380 180 380 188 V200 Q380 208 388 208 H480" marker-end="url(#l4-l7-head-accent)"/>
+  <text class="dg-mono dg-accent-text" x="434" y="200" text-anchor="middle">/photos</text>
+  <!-- Components -->
+  <rect class="dg-box" x="0" y="24" width="104" height="48" rx="6"/>
+  <text class="dg-name" x="52" y="53" text-anchor="middle">App</text>
+  <rect class="dg-box" x="184" y="24" width="144" height="48" rx="6"/>
+  <text class="dg-name" x="256" y="45" text-anchor="middle">L4 balancer</text>
+  <text class="dg-sub" x="256" y="62" text-anchor="middle">sees address, port</text>
+  <rect class="dg-box" x="480" y="24" width="160" height="48" rx="6"/>
+  <text class="dg-name" x="560" y="45" text-anchor="middle">Server</text>
+  <text class="dg-sub" x="560" y="62" text-anchor="middle">decrypts</text>
+  <rect class="dg-box" x="0" y="144" width="104" height="48" rx="6"/>
+  <text class="dg-name" x="52" y="173" text-anchor="middle">App</text>
+  <rect class="dg-box" x="184" y="144" width="144" height="48" rx="6"/>
+  <text class="dg-name" x="256" y="165" text-anchor="middle">L7 balancer</text>
+  <text class="dg-sub" x="256" y="182" text-anchor="middle">decrypts, reads HTTP</text>
+  <rect class="dg-box" x="480" y="108" width="160" height="40" rx="6"/>
+  <text class="dg-name" x="560" y="133" text-anchor="middle">Message servers</text>
+  <rect class="dg-box" x="480" y="188" width="160" height="40" rx="6"/>
+  <text class="dg-name" x="560" y="213" text-anchor="middle">Photo servers</text>
+</svg>

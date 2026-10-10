@@ -1,33 +1,89 @@
 # WRITING.md
 
-What an article on this site must look like. Read it before you add or change a page in `src/content/docs/`. For the step-by-step process of writing an article, use the `write-article` skill (`.claude/skills/write-article/`).
+What an article on this site must look like. Read it before you add or change a page in `src/content/docs/`. For the step-by-step process of writing an article, use the `write-article` skill (`.claude/skills/write-article/`). [Networking](src/content/docs/fundamentals/networking.md) is the reference article: when this file is unclear, do what it does.
 
 ## Reader and goal
 
-- The reader already knows system design basics. Do not teach from zero.
-- The goal is to help the reader design a system fast — in about one hour, as in an interview.
-- Each page builds patterns: a default choice, the signals that change it, and the trade-offs.
-- No deep dives, no history, no "why this exists". Keep a detail only if it changes a design decision.
+- The reader is an engineer who knows the topic but forgot it or never went deep. Do not teach from zero.
+- The goal is to help the reader make design decisions fast, as in a one-hour interview.
+- Keep a detail only if it changes a design decision. The internals of one technology go to its own article (see [Other articles](#other-articles)).
 
-## Language
+## Article shape
 
-- Simple English that non-native readers can follow. Short sentences, common words.
-- Define a term the first time it appears, in a few words.
-- Speak to the reader directly ("use", "pick", "say"). No filler and no jokes.
+1. **Intro.** One or two sentences: why the topic matters for a design. No list of questions and no "how to read this page": the reader sees the structure.
+2. **Running example.** One compact system (the Networking article uses a messenger) runs through the whole page. Each block adds a step to it, so the reader builds on what they already saw instead of meeting a new example every time.
+3. **Blocks.** One `##` section per problem, in the order the example meets them. Each block:
+   - opens from the example: what the system is doing when the problem appears;
+   - names the problem, then gives one or more solutions;
+   - says what each solution costs and when to pick it; when each solution fixes a weakness of the previous one, show them as an evolution;
+   - ends with one short standalone sentence that names the next problem.
+4. **Callouts, tables, and diagrams** go where the point comes up, not in a fixed order (see below).
+5. **Cheat sheet.** The last section: one line per block, for a quick review before an interview. Keep the conditions from the text; a cheat sheet line must never state a stricter or broader rule than the block it comes from.
 
-## Fundamentals pages
+## Style
 
-Fundamentals pages live in `src/content/docs/fundamentals/`. Each page has this shape:
+- Essence first. Lead with the core idea; cut sentences the reader can infer.
+- Do not use a term before the block that introduces it, not even in an example.
+- Introduce a term once, where it solves the problem at hand, and define it by its purpose. Mention it elsewhere only if it changes a decision there.
+- Keep the same level of detail for all options in one block. If one option needs more, its details belong to its own article.
+- When a point applies to a class of technologies, name the class ("long-lived connection"), not one member ("WebSocket").
+- Do not restate a conclusion the reader already drew from the text.
+- No sentences about the document itself ("in this article", "as shown below").
+- Simple English that non-native readers can follow. Short sentences, common words. Speak to the reader directly ("use", "pick", "say"). No filler and no jokes.
+- Terms and abbreviations go to the [glossary](#glossary). Do not expand them in parentheses unless the article is where the term is explained.
 
-1. **Intro** — one short paragraph: what the topic covers and when it comes up in an interview.
-2. **Sections** — one `##` section per decision. Start with the default choice, then say when to pick something else.
-3. **Comparison tables** — use a table when you compare two or more options.
-4. **Interview tips** — put the exact phrase or move to use in an interview in a `:::tip[In the interview]` aside. One or two per section at most.
-5. **Cheat sheet** — the last section. A short list of the rules from the page, one line each.
+## Callouts
+
+Callouts are container directives (`src/plugins/blocks.mjs`). Use them sparingly, where the point arises:
+
+| Directive | Label | Use for |
+|---|---|---|
+| `:::do` | What to do | The recommended choice and when to switch |
+| `:::tradeoff` | Trade-off | What you win and what you pay |
+| `:::interview` | In the interview | What to say when the interviewer asks about it |
+| `:::avoid` | Avoid | A common mistake |
+
+## Diagrams
+
+Add a diagram where a picture explains faster than text: messages in time (who sends what, when), components in space (where things run), two options side by side, or an evolution. Do not draw what a sentence or a table already says well.
+
+- One idea per diagram. Put it right after the paragraph it illustrates, before that block's callouts.
+- Use the words of the text. No term before its block, same as in prose.
+- Write the diagram as an SVG file in `src/diagrams/<name>.svg` and insert it with `::diagram{name="<name>"}` on its own line (`src/plugins/diagrams.mjs`). The SVG is inlined into the page.
+- Color only through the `dg-*` classes in `src/styles/article.css`, never with hard-coded colors, so the diagram follows the light and dark themes.
+- Accent marks the one thing the diagram is about. An accented box or badge gets the accent border and tint, and its text stays the normal color. An accented arrow, line, or dot gets the accent color, and so does its label. No other text uses the accent.
+- Text: names in the sans font (`dg-name`), notes in `dg-sub`, arrow labels in uppercase mono (`dg-mono`). Technical values (domains, IP addresses, paths) keep their case.
+- Draw on a grid 720 units wide. When the content is narrower, trim the `viewBox` to the content: the plugin then gives the diagram a matching share of the column, so text keeps the same size in every diagram.
+- Every SVG has `role="img"`, `aria-labelledby`, a `<title>`, and a `<desc>` that says what the diagram shows (it is the alt text). Prefix all IDs with the diagram name.
+- Before showing a diagram, check it in both themes and at phone width.
+
+## Other articles
+
+[ARTICLES.md](ARTICLES.md) is the map of written and planned articles. Use it to decide what goes into this article and what gets one line plus a link to another one.
+
+- A topic that another article covers in depth gets one line here, enough for the decision, and a link.
+- If that article does not exist yet, put a hidden marker where the link should go: `<!-- link: patterns/real-time -->`. When the article is written, its markers are replaced with links (see ARTICLES.md).
+- When you add or plan an article, update ARTICLES.md.
+
+## Glossary
+
+The glossary (`src/data/glossary.mjs`) is the one place where terms are defined. The site shows each entry on the [Glossary](https://tech0ver.github.io/sysdis/glossary/) page, and the first mention of a term on a page gets a tooltip with the whole entry and its `readMore` link.
+
+- Add every term or abbreviation that a reader may not know and the page does not explain: protocols, patterns, jargon.
+- Only the first mention of a term on a page gets a tooltip. A page that a term's `readMore` points to explains the term in its own text, so it gets no tooltip for that term. Set `readMore` to the section (`page/#anchor`) that explains the term, and keep `short` and `explanation` in line with that text.
+- One entry per concept the reader sees as one ("IP" and "IP address" are one entry with both aliases), so a related term does not get a second tooltip later on the page.
+- Aliases match exactly and are case-sensitive. List every form the text uses (singular, plural, abbreviation).
+- `term` keeps the official spelling of names and abbreviations (OpenAPI, GraphQL, gRPC, TCP). Common words start with a capital letter (Failover, Exponential backoff).
+- Keep an entry short enough to read in a tooltip: `short` plus `explanation` together stay under about 60 words.
+- `short` is one sentence and fits any context. Write "how long a piece of data stays valid", not "how long a DNS answer is cached".
+- `explanation` is two or three sentences: what it is and why it matters in a design.
+- `expansion` is what an abbreviation stands for. Only for abbreviations.
+- `readMore` points to the page on this site that explains the term. If no page does, point to a trusted external source (MDN, the official docs, Wikipedia).
+- Remove entries that no page uses.
 
 ## Sources
 
-- The author names the sources for each article: study notes, books, sites, or their own experience.
+- The author names the sources for each article: study notes, books, sites, or their own experience. The article never mentions its sources.
 - Write everything in your own words. Do not copy text from any source.
 - Other interview prep sites can show what to cover, not how to say it.
 - When sources disagree, ask the author. Do not pick one silently.
@@ -35,5 +91,5 @@ Fundamentals pages live in `src/content/docs/fundamentals/`. Each page has this 
 ## Adding a page
 
 1. Create the Markdown file. Frontmatter needs `title` and `description`.
-2. Add the page to `sidebar` in `astro.config.mjs`, in the right group.
+2. Add the page to `sidebar` in `astro.config.mjs`, in the right group, and to ARTICLES.md.
 3. Run `bun run build` and check the page in `bun run dev`.

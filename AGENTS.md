@@ -16,12 +16,20 @@ A personal system design knowledge base: articles for interview preparation, pub
 - `src/content/docs/` — pages (Markdown/MDX). File path = URL. `index.mdx` is the home page.
 - `src/styles/theme.css` — color theme (based on Skeleton's "Mona"). Change colors here only, through Starlight `--sl-*` variables.
 - `src/components/ThemeToggle.astro` — replaces Starlight's `ThemeSelect`. Two-way dark/light toggle; with no saved choice the site follows `prefers-color-scheme`.
+- `src/data/glossary.mjs` — the site glossary, one entry per term. Rules for entries are in WRITING.md.
+- `src/plugins/glossary.mjs` — Markdown plugin that adds a tooltip to the first mention of each glossary term on a page. Astro 7 renders Markdown with Sätteri, so this is a Sätteri hast plugin (set in `markdown.processor` in `astro.config.mjs`), not a remark plugin.
+- `src/components/Glossary.astro` and `src/content/docs/glossary.mdx` — the Glossary page. `src/styles/glossary.css` — tooltip and glossary styles. `src/routeData.ts` (Starlight route middleware) builds the page's "On this page" list from the glossary.
+- `src/plugins/blocks.mjs` — Sätteri mdast plugin for article callouts: `:::do`, `:::tradeoff`, `:::interview`, `:::avoid`.
+- `src/plugins/diagrams.mjs` — Sätteri mdast plugin that inlines `src/diagrams/<name>.svg` where a page has `::diagram{name="<name>"}`. Inline SVG lets diagrams take their colors from the theme.
+- `src/styles/article.css` — styles for callouts and diagrams (the `dg-*` classes).
+- Astro caches rendered Markdown until the page file changes. After editing the glossary, a plugin, or a diagram SVG, delete `node_modules/.astro/data-store.json` before `bun run build` or `bun run dev`.
+- `ARTICLES.md` — the map of written and planned articles, and the hidden link markers for articles that do not exist yet.
 - `public/favicon.png` — favicon (tech0ver organization logo). The site has no header logo; the header shows the title only.
 - `.claude/settings.json` — enables Claude Code plugins: [diagram-design](https://github.com/cathrynlavery/diagram-design) for diagrams and [humanizer](https://github.com/blader/humanizer) for editing text. Other agents can install the same skills from those repositories.
 
 ## Conventions
 
-- To write or rewrite an article, use the `write-article` skill (`.claude/skills/write-article/`). The rules for the result are in [WRITING.md](WRITING.md).
+- To write or rewrite an article, use the `write-article` skill (`.claude/skills/write-article/`). The rules for the result are in [WRITING.md](WRITING.md). Which topic goes into which article is in [ARTICLES.md](ARTICLES.md).
 - Internal links are relative (`../caching/`) so they keep working under `base`.
 - Do not duplicate information between README.md and AGENTS.md: README is for running the project, AGENTS.md is for working on it.
 - Before finishing a change, run `bun run build` — it must pass with no errors.
