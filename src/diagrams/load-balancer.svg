@@ -1,0 +1,35 @@
+<svg class="diagram-svg" viewBox="0 0 720 280" role="img" aria-labelledby="load-balancer-title load-balancer-desc" xmlns="http://www.w3.org/2000/svg">
+  <title id="load-balancer-title">A load balancer in front of the servers</title>
+  <desc id="load-balancer-desc">Apps connect to the load balancer's single address. It forwards application traffic to the healthy servers 1 and 2. Server 3 failed its health check, so it gets health checks but no application traffic.</desc>
+  <defs>
+    <marker id="load-balancer-head" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path class="dg-head" d="M0,0 L8,4 L0,8 z"/></marker>
+  </defs>
+  <!-- Connections -->
+  <line class="dg-arrow" x1="112" y1="120" x2="184" y2="120" marker-end="url(#load-balancer-head)"/>
+  <path class="dg-arrow" d="M328 106 H356 Q364 106 364 98 V48 Q364 40 372 40 H400" marker-end="url(#load-balancer-head)"/>
+  <line class="dg-arrow" x1="328" y1="120" x2="400" y2="120" marker-end="url(#load-balancer-head)"/>
+  <path class="dg-arrow dg-empty" d="M328 134 H356 Q364 134 364 142 V192 Q364 200 372 200 H400" marker-end="url(#load-balancer-head)"/>
+  <path class="dg-arrow" d="M528 40 H556 Q564 40 564 48 V96 Q564 104 572 104 H600" marker-end="url(#load-balancer-head)"/>
+  <line class="dg-arrow" x1="528" y1="120" x2="600" y2="120" marker-end="url(#load-balancer-head)"/>
+  <!-- Components -->
+  <rect class="dg-box" x="0" y="92" width="112" height="56" rx="6"/>
+  <text class="dg-name" x="56" y="125" text-anchor="middle">App</text>
+  <rect class="dg-box-accent" x="184" y="92" width="144" height="56" rx="6"/>
+  <text class="dg-name" x="256" y="117" text-anchor="middle">Load balancer</text>
+  <text class="dg-sub" x="256" y="135" text-anchor="middle">one address</text>
+  <rect class="dg-box" x="400" y="16" width="128" height="48" rx="6"/>
+  <text class="dg-name" x="464" y="45" text-anchor="middle">Server 1</text>
+  <rect class="dg-box" x="400" y="96" width="128" height="48" rx="6"/>
+  <text class="dg-name" x="464" y="125" text-anchor="middle">Server 2</text>
+  <rect class="dg-box-failed" x="400" y="176" width="128" height="48" rx="6"/>
+  <text class="dg-name-muted" x="464" y="197" text-anchor="middle">Server 3</text>
+  <text class="dg-sub" x="464" y="213" text-anchor="middle">failed</text>
+  <rect class="dg-box" x="600" y="92" width="120" height="56" rx="6"/>
+  <text class="dg-name" x="660" y="125" text-anchor="middle">Database</text>
+  <!-- Legend -->
+  <line class="dg-rule" x1="0" y1="244" x2="720" y2="244"/>
+  <line class="dg-arrow" x1="184" y1="264" x2="212" y2="264" marker-end="url(#load-balancer-head)"/>
+  <text class="dg-legend" x="220" y="268">traffic</text>
+  <line class="dg-arrow dg-empty" x1="320" y1="264" x2="348" y2="264" marker-end="url(#load-balancer-head)"/>
+  <text class="dg-legend" x="356" y="268">health checks only</text>
+</svg>

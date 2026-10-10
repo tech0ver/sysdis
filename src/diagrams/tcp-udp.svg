@@ -1,0 +1,60 @@
+<svg class="diagram-svg" viewBox="0 0 544 300" role="img" aria-labelledby="tcp-udp-title tcp-udp-desc" xmlns="http://www.w3.org/2000/svg">
+  <title id="tcp-udp-title">A lost packet with TCP and with UDP</title>
+  <desc id="tcp-udp-desc">Four pieces of data, labelled 1 to 4 in this example, go from sender to receiver, and piece 2 is lost. TCP first opens a connection (one round trip, shown as a pair of arrows), resends the missing data, and holds pieces 3 and 4 until it arrives. UDP has no connection and no resend: piece 2 is skipped and nothing waits. The numbers are labels for this example, not protocol fields.</desc>
+  <defs>
+    <marker id="tcp-udp-head" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path class="dg-head" d="M0,0 L8,4 L0,8 z"/></marker>
+    <marker id="tcp-udp-head-accent" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path class="dg-head-accent" d="M0,0 L8,4 L0,8 z"/></marker>
+  </defs>
+  <!-- Sender and receiver lines -->
+  <line class="dg-line" x1="200" y1="64" x2="528" y2="64"/>
+  <line class="dg-line" x1="200" y1="112" x2="528" y2="112"/>
+  <line class="dg-line" x1="200" y1="176" x2="528" y2="176"/>
+  <line class="dg-line" x1="200" y1="224" x2="528" y2="224"/>
+  <!-- TCP: open, send 1-4, packet 2 lost, resend 2; 3 and 4 wait for it -->
+  <line class="dg-wait" x1="360" y1="112" x2="480" y2="112"/>
+  <text class="dg-mono dg-accent-text" x="420" y="130" text-anchor="middle">3 AND 4 WAIT FOR 2</text>
+  <text class="dg-mono dg-muted-text" x="223" y="56" text-anchor="middle">OPEN</text>
+  <line class="dg-arrow" x1="216" y1="64" x2="216" y2="112" marker-end="url(#tcp-udp-head)"/>
+  <line class="dg-arrow dg-empty" x1="230" y1="112" x2="230" y2="64" marker-end="url(#tcp-udp-head)"/>
+  <text class="dg-mono dg-muted-text" x="280" y="56" text-anchor="middle">1</text>
+  <line class="dg-arrow" x1="280" y1="64" x2="280" y2="112" marker-end="url(#tcp-udp-head)"/>
+  <text class="dg-mono dg-muted-text" x="320" y="56" text-anchor="middle">2</text>
+  <line class="dg-arrow" x1="320" y1="64" x2="320" y2="84"/>
+  <line class="dg-cross" x1="316" y1="84" x2="324" y2="92"/>
+  <line class="dg-cross" x1="316" y1="92" x2="324" y2="84"/>
+  <text class="dg-mono dg-muted-text" x="360" y="56" text-anchor="middle">3</text>
+  <line class="dg-arrow" x1="360" y1="64" x2="360" y2="112" marker-end="url(#tcp-udp-head)"/>
+  <text class="dg-mono dg-muted-text" x="400" y="56" text-anchor="middle">4</text>
+  <line class="dg-arrow" x1="400" y1="64" x2="400" y2="112" marker-end="url(#tcp-udp-head)"/>
+  <text class="dg-mono dg-accent-text" x="480" y="56" text-anchor="middle">RESEND 2</text>
+  <line class="dg-arrow dg-message" x1="480" y1="64" x2="480" y2="112" marker-end="url(#tcp-udp-head-accent)"/>
+  <!-- UDP: send 1-4, packet 2 lost, nothing waits -->
+  <text class="dg-mono dg-muted-text" x="280" y="168" text-anchor="middle">1</text>
+  <line class="dg-arrow" x1="280" y1="176" x2="280" y2="224" marker-end="url(#tcp-udp-head)"/>
+  <text class="dg-mono dg-muted-text" x="320" y="168" text-anchor="middle">2</text>
+  <line class="dg-arrow" x1="320" y1="176" x2="320" y2="196"/>
+  <line class="dg-cross" x1="316" y1="196" x2="324" y2="204"/>
+  <line class="dg-cross" x1="316" y1="204" x2="324" y2="196"/>
+  <text class="dg-mono dg-muted-text" x="360" y="168" text-anchor="middle">3</text>
+  <line class="dg-arrow" x1="360" y1="176" x2="360" y2="224" marker-end="url(#tcp-udp-head)"/>
+  <text class="dg-mono dg-muted-text" x="400" y="168" text-anchor="middle">4</text>
+  <line class="dg-arrow" x1="400" y1="176" x2="400" y2="224" marker-end="url(#tcp-udp-head)"/>
+  <text class="dg-mono dg-muted-text" x="340" y="242" text-anchor="middle">2 IS SKIPPED, NOTHING WAITS</text>
+  <!-- Lane names -->
+  <text class="dg-name" x="0" y="84">TCP</text>
+  <text class="dg-sub" x="0" y="100">text message</text>
+  <text class="dg-name" x="0" y="196">UDP</text>
+  <text class="dg-sub" x="0" y="212">voice call</text>
+  <!-- Row labels -->
+  <text class="dg-mono dg-muted-text" x="192" y="67" text-anchor="end">SENDER</text>
+  <text class="dg-mono dg-muted-text" x="192" y="115" text-anchor="end">RECEIVER</text>
+  <text class="dg-mono dg-muted-text" x="192" y="179" text-anchor="end">SENDER</text>
+  <text class="dg-mono dg-muted-text" x="192" y="227" text-anchor="end">RECEIVER</text>
+  <!-- Legend -->
+  <line class="dg-rule" x1="0" y1="264" x2="544" y2="264"/>
+  <line class="dg-arrow" x1="208" y1="276" x2="208" y2="292" marker-end="url(#tcp-udp-head)"/>
+  <text class="dg-legend" x="220" y="288">packet</text>
+  <line class="dg-cross" x1="300" y1="280" x2="308" y2="288"/>
+  <line class="dg-cross" x1="300" y1="288" x2="308" y2="280"/>
+  <text class="dg-legend" x="316" y="288">lost</text>
+</svg>

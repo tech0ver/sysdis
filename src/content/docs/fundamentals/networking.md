@@ -1,228 +1,220 @@
 ---
 title: Networking
-description: The networking choices you make in a system design interview, such as protocols, real-time updates, load balancing, regions, and failure handling.
+description: How components communicate over a network, from a single request to many servers around the world.
 ---
 
-Every design has boxes connected by arrows. Each arrow is a network call. It needs a protocol, it takes time, and it can fail. This page covers the choices you make for those arrows: what a call costs, which protocol to use, how to push updates to clients, how to spread traffic, where to put servers, and what to do when a call fails.
+Every system design has boxes connected by arrows, and every arrow is a network call. To defend a design, you need to know how these calls work and how to choose between the options for each of them.
 
-## What a new request costs
+## The app talks to the server
 
-**Default: reuse connections.** Keep HTTP connections open (keep-alive) and use connection pools between services.
+A messenger starts simple: the mobile app sends a message to a server, and the server stores it in a database.
 
-A new HTTPS connection over HTTP/1.1 or HTTP/2 goes through four steps before the response comes back:
+Each exchange has a client and a server. The client starts it with a request; the server handles the request and returns a response. In request-response, the server only answers; it never starts an exchange itself. Client and server are roles: the server is a server to the app and a client to the database.
 
-1. **DNS** turns the domain name into an IP address. The answer is cached for the time set by its TTL.
-2. **TCP** opens a connection with a three-way handshake.
-3. **TLS** checks the server certificate and agrees on encryption keys.
-4. **HTTP** sends the request and gets the response.
+::diagram{name="client-server"}
 
-Steps 2 and 3 each cost round trips before any data moves. A round trip is the time for a message to reach the server and for the answer to come back. On a reused connection you pay only for step 4.
+The app must know where to send the request.
 
-**DNS TTL is a trade-off.** A low TTL lets you move traffic to a new IP address fast, for example in a failover. A high TTL means fewer lookups, but clients keep using the old address for longer.
+## Finding the server
 
-:::tip[In the interview]
-You rarely need to draw these steps. Use them to explain latency: "A new connection costs several round trips, so we keep connections open and put servers close to users."
+Every machine on a network has an IP address, and the network carries data to it in small pieces called packets. A port picks the program on that machine. The app needs both to connect.
+
+The app could keep the server's IP address in its code, but then the server could not move without a new app release. So the app knows a name, and DNS turns it into an IP address. To move the server, you change one DNS record. The answer is cached, so most requests skip the lookup.
+
+Inside the system, the server finds the database by name too. Services that start and stop often, for example during autoscaling, use service discovery: a registry that keeps track of which instances are alive. <!-- link: patterns/service-discovery -->
+
+::diagram{name="dns-discovery"}
+
+Packets can get lost on the way or arrive out of order.
+
+## Delivering data
+
+A text message must arrive whole and in order, and TCP takes care of that. The app and the server first open a connection; then TCP numbers the data, resends what was lost, and puts it back in order. The cost is waiting: a lost packet holds up everything after it until it arrives again.
+
+Now the messenger adds voice calls, and here waiting hurts. A lost piece of audio is useless half a second later, and holding up the next pieces only adds delay. UDP fits this case: it sends separate messages with no connection, no resends, and no order, so nothing waits. If the app cares about a loss, it handles it itself, for example by hiding a short gap in the sound.
+
+::diagram{name="tcp-udp"}
+
+:::do
+Use TCP by default: almost all traffic between apps, services, and databases runs on it. Pick UDP when late data is useless because newer data replaces it: voice and video calls, live game state.
 :::
 
-## TCP or UDP
+Anyone on the path can still read or change the data.
 
-**Default: TCP.** HTTP/1.1, HTTP/2, gRPC, WebSockets, and database connections all run on it.
+## Securing the connection
 
-| | TCP | UDP |
+Messages are private, but they pass through networks the messenger does not control. TLS protects them: it encrypts the data, detects any change on the way, and checks the server's certificate, so the app knows it talks to the real server. Inside the system, the server and the database can check each other's certificates too (mTLS), so only known components can connect. <!-- link: fundamentals/security -->
+
+Security costs time. Before the first message moves, TCP opens the connection, and then TLS checks the certificate and agrees on keys. Each of these handshakes takes at least one round trip, so a new connection is slow to start.
+
+::diagram{name="connection-setup"}
+
+:::do
+Reuse connections. The app keeps its connection open between messages (keep-alive), and the server keeps a pool of open connections to the database.
+:::
+
+The bytes now arrive safely, but the app and the server still have to agree on what they mean.
+
+## Agreeing on the format
+
+To send a message, the app must say what it wants and pass the data, and the server must say whether it worked. HTTP is the common format for this. A request has a method and a path, such as `POST /messages`, headers with details like the user's token, and a body with the message. A response has a status code, headers, and a body. The status code starts with 2 on success, with 4 when the client must fix the request, and with 5 when the server failed and a retry may help. HTTP over TLS is called HTTPS.
+
+::diagram{name="http-message"}
+
+HTTP is stateless: each request stands on its own and carries what the server needs, such as the token.
+
+In practice, HTTP/1.1 sends one request at a time over a connection, so clients open several connections. HTTP/2 sends many requests over one connection at the same time, but they share one TCP stream, and a lost packet still holds up all of them. HTTP/3 runs over QUIC, which is built on UDP: a lost packet holds up only the requests whose data it carried, and one round trip sets up both the connection and encryption. This helps mobile apps on unstable networks.
+
+On top of HTTP, requests follow an API style: REST for most public APIs, gRPC between internal services, GraphQL when different clients need different data. <!-- link: technologies/api-styles -->
+
+A new message from a friend reaches the server, but the server cannot pass it to the app until the app asks.
+
+## Pushing new messages
+
+The simplest fix is polling: the app asks "anything new?" every few seconds. It works everywhere, but most requests return nothing, and a message waits up to one interval.
+
+Long polling cuts the wait. The server holds the request open until a message arrives, answers, and the app asks again right away. Messages arrive almost at once, but each one still costs a new request.
+
+SSE keeps one HTTP response open, and the server writes events into it as they come. If the connection breaks, the client reconnects and tells the server the last event it got. SSE only goes from the server to the client, and it carries text only.
+
+A messenger also sends a lot from the app: messages, typing indicators, read receipts. WebSocket gives both sides one open connection. It starts as an HTTP request and then switches to a two-way channel over TCP, where either side can send at any time.
+
+::diagram{name="push-options"}
+
+:::tradeoff
+Polling is the simplest option and the slowest. The others deliver at once but keep a request or connection open, which holds memory on the server and breaks when anything on the path drops idle connections. WebSocket also leaves HTTP behind, with no caching and no status codes, so the app builds its own acknowledgments and reconnects.
+:::
+
+:::do
+Pick the simplest option that meets your delay target: polling when a delay of seconds is fine, long polling when updates must arrive at once but a stream is not possible, SSE when only the server pushes, WebSocket when both sides send often.
+:::
+
+Voice and video calls take a different path. Audio sent through the server travels farther and loads the server, so WebRTC connects the two phones directly over UDP. The messenger's server only helps them find each other, over the WebSocket (signaling). When a direct path is blocked, a TURN server relays the audio. <!-- link: technologies/webrtc -->
+
+One server can hold only so many connections, and if it goes down, the messenger goes down with it.
+
+## Adding servers
+
+The messenger grows, and one server is not enough. You run several, and each client must reach one of them. DNS can return all their addresses, but clients cache the answer, so a crashed server keeps getting traffic until the cache expires.
+
+A load balancer fixes this. Clients connect to its single address, and it forwards the traffic to the servers. It runs health checks and stops sending traffic to a failed server within seconds.
+
+::diagram{name="load-balancer"}
+
+:::interview
+If asked whether the balancer is a new single point of failure: run several. In active-passive, a standby takes over the address when the main balancer fails. In active-active, DNS spreads clients across the balancers, and health checks remove a failed one from the answers.
+:::
+
+Load balancers differ in how much of the traffic they understand. The OSI model splits network communication into layers, and three of them matter for balancing:
+
+| Layer | Job | Protocols |
 |---|---|---|
-| Connection | Handshake first | None |
-| Delivery | Reliable inside one connection: resends lost packets, but the connection itself can break | Best effort, data can be lost |
-| Order | In order | No order |
-| Data unit | Byte stream, no message boundaries | Separate datagrams, one datagram = one message |
-| On packet loss | Data after the lost packet waits until it is resent | Nothing waits |
+| L3, network | Deliver packets between machines | IP |
+| L4, transport | Carry data between programs | TCP, UDP |
+| L7, application | Define the messages of the app | HTTP, WebSocket, DNS |
 
-**Pick UDP** when fresh data is worth more than lost data: live audio and video, game state. A late packet is useless there, so resending it only adds delay. With UDP, the application handles loss, order, and duplicates itself if it cares about them.
+An L4 balancer sees only addresses and ports and forwards whole connections. An L7 balancer ends TLS and reads each HTTP request, so it can route by what the request contains. <!-- link: technologies/load-balancers -->
 
-Browsers cannot open raw UDP sockets. In the browser, UDP is available only through WebRTC (and inside HTTP/3).
+::diagram{name="l4-l7"}
 
-:::note
-HTTP/3 runs on QUIC, which runs on UDP. One lost packet no longer blocks unrelated requests on the same connection. You do not need to explain QUIC unless the interviewer asks.
+:::tradeoff
+L7 sees requests, so it can route, retry, and check tokens, but it spends CPU on decrypting and parsing. L4 is faster and works with any protocol, but it cannot look inside the traffic.
 :::
 
-## API protocol: REST, gRPC, or GraphQL
-
-**Default: REST over HTTP.** Model resources (`/users/42/orders`) and use HTTP methods on them. Do not model actions (`/updateUser`).
-
-| | REST | gRPC | GraphQL |
-|---|---|---|---|
-| Shape | Resources + HTTP methods | Procedures (`CreateOrder`) | One endpoint, client picks the fields |
-| Format | Usually JSON | Protocol Buffers (binary) over HTTP/2 | JSON |
-| Contract | Optional (an OpenAPI spec file) | Strict `.proto` schema, generated clients | Typed schema |
-| Best for | Public APIs, browsers, unknown clients | Calls between your own services | Many clients that need different data |
-| Weak side | Over-fetching, many calls for nested data | No direct browser support, harder to debug | Hard to cache and rate-limit |
-
-**Pick gRPC** for calls between your own services when payload size and speed matter, or when you need streaming. Protocol Buffers are smaller and faster to parse than JSON. Browsers cannot call gRPC directly (gRPC sends the call status in HTTP trailers, and browser `fetch` cannot read them), so they need a proxy such as gRPC-Web. A common split: REST at the edge, gRPC inside.
-
-**Pick GraphQL** when many client types (web, mobile, partners) need different shapes of the same data, or one screen needs nested data from many sources. The costs:
-
-- **Caching is harder.** Clients usually send queries as POST requests to one endpoint, and HTTP caches and CDNs do not cache POST. To use them, send queries as GET, often as persisted queries.
-- **Rate limits need a cost model.** One query can be cheap or very expensive.
-- **Heavy queries.** Deeply nested queries and the N+1 problem can overload the server. You need depth limits and batching.
-
-### HTTP details that change the design
-
-- **Idempotent methods.** A method is idempotent if repeating the same request leaves the same final state. GET, PUT, and DELETE are idempotent. POST is not. Retrying a POST can create a duplicate, so it needs an idempotency key (see [When a call fails](#when-a-call-fails)).
-- **Status codes.** `201` means a new resource was created. `202` means the request was accepted but not finished yet, and it may still fail. It is the signal for async processing. `401` means the client is not authenticated ("who are you?"). `403` means the server understood the request and refuses it. `429` means "too many requests". `503` means "try again later".
-- **Statelessness.** HTTP does not remember the client between requests. Keep sessions in a shared store, not in one server's memory. Then any server can handle any request.
-- **Caching headers.** `Cache-Control: max-age` sets how long a response stays fresh. `ETag` lets the client ask "has it changed?" and get a short `304 Not Modified` instead of the full body.
-- **HTTP/2 and HTTP/3.** HTTP/2 sends many requests over one connection at the same time. HTTP/3 does the same over QUIC, so one lost packet does not block the other requests.
-
-:::tip[In the interview]
-Say "REST by default" and move on. Spend your time on the API shape (resources, methods, pagination, idempotency) instead of the protocol. Bring up gRPC only for internal traffic where speed matters.
+:::do
+Use an L7 balancer for HTTP and WebSocket traffic. Pick L4 for other protocols, or when the balancer must not decrypt the traffic.
 :::
 
-## Pushing updates to clients
+The balancer still has to decide which server gets each request.
 
-When the server must tell the client about new data, **pick the simplest option that works**. Go down this table only as far as you need.
+## Spreading the load
 
-| Option | How it works | Direction | Pick it when |
-|---|---|---|---|
-| Polling | Client asks every N seconds | Client → server | Updates are rare and a delay of N seconds is fine |
-| Long polling | Server holds each request until there is data or a timeout, then the client asks again | Server → client | You need push but cannot add new infrastructure |
-| SSE | One long HTTP response that streams text events | Server → client | Feeds, notifications, live scores, LLM token streams |
-| WebSocket | HTTP connection upgraded to a two-way channel | Both ways | Chat, collaboration, multiplayer games |
-| WebRTC | Direct peer-to-peer connection over UDP | Peer ↔ peer | Audio and video calls |
+If any server can handle any request, the choice is simple. Round robin sends requests to the servers in turn. It works when the servers are equal and requests cost about the same.
 
-If a delay of a few seconds is fine, polling is enough. **When you need real push, SSE is the default.** It is plain HTTP, and the browser reconnects by itself and sends the ID of the last event it got (`Last-Event-ID`). If the server keeps recent events, it can resend the missed ones. SSE sends only text and only from the server to the client.
+When servers differ in size, weighted round robin sends more requests to the bigger ones. When requests differ in cost, the balancer looks at the current load instead, for example the number of active requests on each server. Long-lived connections stay open for hours, so the number of open connections is a better sign of load: least connections sends each new one to the server with the fewest.
 
-**Pick WebSocket** when the client also sends often. The costs:
+::diagram{name="balancing"}
 
-- **Each connection is stateful.** It holds memory on one server.
-- **No HTTP caching.** Data sent over a WebSocket skips browser and CDN caches. Send live updates over the socket, and load images and other cacheable files over normal HTTP.
-- **No delivery acknowledgment.** Messages sent while a client is reconnecting are lost unless your protocol tracks them (see the next section).
-
-Serve SSE and WebSocket over TLS (`https://`, `wss://`). Some old proxies on the network hold back or cut streaming responses, and TLS hides the stream from them. Your own load balancers, proxies, and CDN still decrypt the traffic. Make sure they support streaming, turn off response buffering for SSE, and use idle timeouts longer than your heartbeat interval.
-
-**WebRTC** is for audio and video calls. Most devices sit behind NAT, which blocks new connections from outside, so a WebRTC setup needs:
-
-- a **signaling server** (often over WebSocket) to exchange connection details between peers;
-- a **STUN** server, which tells a device its public address;
-- a **TURN** relay, which forwards all traffic when a direct connection fails. Relay bandwidth is expensive. How many calls need TURN depends on your users' networks, so measure it and size the relay for it.
-
-For group calls, peers do not connect each to each, because their upload bandwidth runs out fast. A central media server receives each stream and sends it on.
-
-:::tip[In the interview]
-Do not reach for WebSockets by default. Say why you need two-way traffic. If you don't, SSE or polling is simpler to run and to scale.
+:::do
+Start with round robin for short requests. Use least connections for long-lived connections.
 :::
 
-## Running long-lived connections at scale
+Not every server can handle every request, though.
 
-**Default: stateless connection servers.** A connection server only holds sockets. Important state lives in a shared store, so a client can reconnect to any server.
+## Servers with state
 
-- **Reconnects are normal.** A WebSocket stays on the server that accepted it. If that server dies or is redeployed, the client must reconnect, maybe to another server. Clients reconnect with exponential backoff (a longer wait after each failed try) and jitter (a random extra wait), so thousands of them do not come back at the same moment.
-- **Missed messages.** A reconnect does not bring back what was sent during the gap. When delivery matters, give messages sequence numbers. The client sends the last number it saw, and the server resends the rest from a store.
-- **Reaching a specific user.** To send a message to user B, it must reach the server that holds B's connection. Use pub/sub. The app publishes each event to a channel, for example in Redis. Every connection server subscribes and forwards the event to its own clients.
-- **Heartbeats.** Send pings to find dead connections and to stop proxies and load balancers from closing idle ones. Many of them close a silent connection after 60 seconds by default.
-- **Slow clients.** A client that reads slower than you send creates backpressure (data piles up). Use bounded buffers. Merge or drop updates that a newer one replaces, and disconnect clients that stay too slow.
+A server is stateless when it keeps no user data between requests: sessions and other user data live in a shared database or cache. Any server can then take any request, the balancer can use any algorithm, and a crashed server loses no user data.
 
-:::tip[In the interview]
-When you add WebSockets, say how a message finds the right server (pub/sub) and what happens on reconnect (sequence numbers and replay). That is what the interviewer will ask next.
+When a server keeps state in memory, requests from the same user must come back to it. Sticky sessions do this: the balancer remembers which server a user went to, by a cookie or by the client's address. The price is uneven load, and when that server crashes, its state is gone.
+
+:::do
+Keep servers stateless and move state to a shared store. Use sticky sessions only when state cannot leave the server.
 :::
 
-## Load balancing
+An open connection is different. A long-lived connection, such as WebSocket or SSE, stays on the server that accepted it without any sticky sessions, so a message for that user has to find this server. Real-time systems route messages between servers for this. <!-- link: patterns/real-time -->
 
-**Default: stateless servers behind an L7 load balancer, round robin, health checks.** L4 and L7 are network layers: an L4 load balancer works with TCP connections, an L7 load balancer reads HTTP requests. Shared state goes to a database or cache, so any server can take any request.
+::diagram{name="open-connection"}
 
-### L4 or L7
+Users far from the servers wait longer for every round trip.
 
-| | L4 load balancer | L7 load balancer |
-|---|---|---|
-| Sees | IP addresses, ports, TCP connection | HTTP: host, path, headers, cookies |
-| Routes | Each connection | Each request |
-| Can do | Forward any TCP/UDP traffic, keep TLS encrypted to the backend | Path routing, TLS termination, auth, rate limits |
-| Cost | Faster, less work per packet | More CPU per request |
+## Users far away
 
-**Default: L7** for HTTP APIs. L7 load balancers also carry WebSockets. For long-lived connections, use least connections and set the idle timeout longer than your heartbeat interval.
+The messenger now has users on other continents. Every round trip to a distant server takes longer, and a new connection needs several of them before the first message moves. <!-- link: fundamentals/latency-numbers -->
 
-**Pick L4** for non-HTTP traffic, when TLS must stay encrypted all the way to the backend (TLS passthrough), or when you need raw speed.
+Users also send photos and videos, and these files never change after upload. A CDN keeps copies on servers near users, so the files come from close by. <!-- link: technologies/cdn -->
 
-**TLS termination** means the load balancer decrypts HTTPS, so it can read and route HTTP. It can then send plain traffic to the backend or encrypt it again.
+Messages still go to your servers. To bring them closer, run the servers in several regions and send each user to the nearest one. GeoDNS does this by answering with the address of a region near the user.
 
-### Algorithms
+::diagram{name="regions"}
 
-| Algorithm | How it picks | Use it when |
-|---|---|---|
-| Round robin | Each server in turn | Default; requests cost about the same |
-| Least connections | Fewest open connections | Long-lived connections (WebSockets, SSE) |
-| Least requests / least load | Fewest active requests or lowest measured load | Request cost varies a lot, or many requests share one HTTP/2 connection |
-| Weighted | Bigger servers get more traffic | Servers have different sizes |
-| By key | Same key (user ID, chat room) → same server | A server keeps local state per key, such as a cache |
-
-For routing by key, use consistent hashing, so adding or removing a server moves only a few keys. Plain `hash mod N` moves most keys when N changes.
-
-### Keeping it available
-
-- **Health checks.** The load balancer probes each server and stops sending traffic to failing ones. Require several failures in a row (and several successes to come back), so one slow response does not remove a healthy server.
-- **Connection draining.** Before removing a server, stop sending it new requests and let current ones finish.
-- **No single point of failure.** Run more than one load balancer. DNS can return several load balancer addresses, but cached DNS answers make failover slow.
-- **Sticky sessions** keep a client on one server. They make failover and rebalancing harder, so use them only when state cannot leave the server.
-
-### Client-side load balancing
-
-Inside your own system, the client can pick a server itself, using a list of healthy instances from service discovery. This removes one hop and suits service-to-service calls. It is common with gRPC. A gRPC client sends all its requests over one long-lived HTTP/2 connection. An L4 load balancer balances connections, not requests, so all requests of that client land on one server. Use client-side load balancing or an L7 load balancer that understands HTTP/2.
-
-:::tip[In the interview]
-Draw one load balancer box and say "L7, round robin, health checks, stateless servers". Go deeper only for long-lived connections (least connections, idle timeouts) or for servers with local state (consistent hashing).
+:::tradeoff
+When a region fails, health checks remove it from the DNS answers, and the TTL decides how soon clients see the change. A short TTL moves users away quickly, but clients look up the name more often. A long TTL means fewer lookups, but users keep going to the failed region for longer.
 :::
 
-## Servers and data for global users
+Each region needs the data its users read. Copying data between regions makes reads fast but forces a choice between speed and consistency. <!-- link: fundamentals/replication -->
 
-**Default: a CDN for static and cacheable content, and the API in the region nearest to the user.**
-
-Data cannot travel faster than light in fiber, so the only way to cut this delay is to put servers closer to users. Typical round trips:
-
-| Path | Round trip |
-|---|---|
-| Inside one data center | ~0.5 ms |
-| New York ↔ London | ~70 ms measured (~56 ms is the physical minimum in fiber) |
-| US West Coast ↔ Europe | ~150 ms |
-
-A new HTTPS connection needs several round trips, so a far server feels slow quickly.
-
-- **CDN.** Cache images, video, JS, and CSS on servers near users. Responses that many users read and that may be a little stale can be cached too. A CDN cuts both latency and load on your servers.
-- **Nearest region.** Run the service in several regions and send each user to the closest one. GeoDNS returns a different IP address by the user's location; anycast lets many sites share one IP address, and network routing sends each user to one of them, usually a close one.
-- **Keep data near its users.** Partition data by region when users mostly touch local data, for example riders and drivers in one city. If a request still has to call another region, the user waits for that distance again.
-- **Shared data across regions is the hard part.** If users in several regions write the same data, you choose between two options. With one leader (the only copy that accepts writes), writes from far regions are slow. With a leader in each region, writes are fast but two regions can change the same data at once and conflict.
-
-:::tip[In the interview]
-For global users, say "CDN for static content, nearest region for API calls". Then point out which data must be shared across regions. That is where consistency becomes hard.
+:::do
+Put static files behind a CDN first. Add regions when users on several continents need fast responses from your servers.
 :::
+
+Wherever the servers are, some calls still fail.
 
 ## When a call fails
 
-**Default: a deadline on every remote call. Retry only temporary failures, and only for operations that are safe to repeat. Make writes safe to repeat with an idempotency key. Add a circuit breaker for dependencies that can fail for a long time.**
+The app sends a message and gets no answer. The request may have been lost, the server may have saved the message and lost the response, or the server may just be slow. The app cannot tell which.
 
-A network call can succeed, fail, or time out. After a timeout you do not know if the other side did the work, so a retry can do it twice.
+First, the app must stop waiting. A call without a timeout can hang forever and hold a connection the whole time. So every call gets a timeout. When one request calls other services, it passes the remaining deadline along, so they can stop work that is no longer needed.
 
-- **Timeouts and deadlines.** Set a timeout on every outgoing call. Without it, one slow dependency holds threads and connections until the whole service stops. Set a deadline for the whole request and pass the remaining time to downstream calls. gRPC supports deadlines, but it sets none by default: set one on each call.
-- **Retries.** Retry only temporary errors (timeouts, `503`, `429`) and only within the remaining deadline. Do not retry `400`: the request itself is wrong. Wait longer after each try (exponential backoff: 100 ms, 200 ms, 400 ms…). Add random jitter, so thousands of clients do not retry at the same moment. Cap the number of tries, and respect the server's `Retry-After` header.
-- **Retry budget.** Retries multiply traffic when a service is already struggling (a retry storm). Limit retries to a small share of all requests, and retry at only one layer of the call chain.
-- **Idempotency keys.** For writes with side effects (payments, orders), the client creates a unique key before the first attempt and sends the same key on every retry. The server saves the key in the same transaction as the change itself. If the key comes again, it returns the saved result and does nothing new.
-- **Circuit breaker.** It watches calls to one dependency and has three states. **Closed:** calls pass and failures are counted. **Open:** after too many failures or timeouts, calls fail fast without waiting. **Half-open:** after a pause, a few test calls go through; if they succeed, the breaker closes again. Return a fallback while the breaker is open.
-- **Load shedding.** When your own service is overloaded, reject part of the requests early with `503` or `429`. This is better than letting queues grow until everything times out.
+Most failures are short, so the app retries. Retries add load to a server that may already be struggling, so the app waits longer before each attempt (exponential backoff), adds a random delay so that clients do not retry all at once (jitter), and stops after a few attempts. Retry only temporary failures, such as timeouts and 503 Service Unavailable, and only when repeating the call is safe. A 4xx response usually means the request itself is wrong.
 
-:::tip[In the interview]
-When the interviewer asks "what if this call fails?", answer with the chain: "a deadline, a few retries with exponential backoff and jitter, an idempotency key so retries are safe, and a circuit breaker so failures do not cascade".
+::diagram{name="retries"}
+
+:::avoid
+Retrying without limits. When a server slows down, every client retries at the same time, and the extra load keeps the server down.
 :::
+
+Servers protect themselves from too many requests as well. A rate limit caps how many requests each client may send, and the server answers the rest with 429 Too Many Requests, often with a Retry-After header. Unlike other 4xx responses, this one is worth retrying, after the time the server asked for. <!-- link: patterns/rate-limiting -->
+
+A retry after a timeout can deliver the message twice, because the first attempt may have worked. To prevent this, the app creates an idempotency key, a unique ID for the message, and sends it with every attempt. The server stores the keys it has processed, and for a repeated key it returns the saved result instead of saving the message again.
+
+::diagram{name="idempotency-key"}
+
+:::do
+Give every network call a timeout. Retry temporary failures only when repeating the call is safe, a few times, with backoff and jitter. For writes that could create duplicates, add an idempotency key.
+:::
+
+When a dependency keeps failing, retries only make it worse. A circuit breaker stops calling it for a while and fails fast instead. <!-- link: patterns/resilience -->
 
 ## Cheat sheet
 
-- Reuse connections. A new HTTPS connection over HTTP/1.1 or HTTP/2 = DNS → TCP → TLS → HTTP, several round trips.
-- Low DNS TTL = fast failover; high TTL = fewer lookups.
-- TCP by default. Build on UDP yourself only when late data is useless (live media, games).
-- REST by default, at the edge. gRPC between your own services when speed, payload size, or streaming matter. GraphQL when many clients need different data.
-- POST is not idempotent. Add an idempotency key before you retry it.
-- Server push: polling → long polling → SSE → WebSocket. Pick the simplest that works; SSE is the default for real push.
-- WebSocket: no caching, plan for reconnects with jitter, sequence numbers, and pub/sub between servers.
-- WebRTC needs signaling, STUN, and TURN; group calls go through a media server.
-- Stateless servers behind an L7 load balancer, round robin, health checks.
-- Long-lived connections: least connections, idle timeout above the heartbeat interval, no buffering for SSE. L4 for non-HTTP or TLS passthrough.
-- Routing by key only for per-key local state; use consistent hashing.
-- CDN for static content; nearest region for APIs; keep data near its users.
-- Every remote call has a deadline. Retry only temporary failures of safe operations, with backoff and jitter. Writes get an idempotency key created before the first try. Circuit breaker for failing dependencies.
-- Keep a retry budget and retry at one layer only. When overloaded, shed load with `503` or `429`.
+- In request-response, the client starts and the server answers. One component can be a server to its caller and a client to the database.
+- Clients find servers by a DNS name, not an IP address. Internal services that start and stop often use service discovery.
+- Use TCP by default. Use UDP when late data is useless: calls, live game state.
+- Encrypt all traffic: TLS for connections, while WebRTC encrypts calls itself. Reuse connections to skip the handshakes: keep-alive for clients, pools for services.
+- HTTP carries requests: 2xx is success, 4xx means fix the request, 5xx means the server failed. REST outside, gRPC inside, GraphQL for clients that need different data.
+- To push updates, pick the simplest option that meets the delay target: polling, long polling, SSE for server-to-client streams, WebSocket for both directions. Calls go peer to peer over WebRTC.
+- Put servers behind a load balancer with health checks. L7 for HTTP and WebSocket, L4 for other protocols or when the balancer must not decrypt. Run more than one balancer.
+- Round robin for similar short requests, weighted round robin for servers of different size, current load for requests of different cost, least connections for long-lived connections.
+- Keep servers stateless with state in a shared store. Use sticky sessions only when state cannot leave the server. An open connection stays on its server.
+- For distant users: a CDN for static files first, then regions with GeoDNS. Health checks and the TTL decide how fast users leave a failed region.
+- Every call gets a timeout; after a timeout, the call may still have worked. Retry temporary failures only when repeating is safe, a few times, with backoff and jitter. Use an idempotency key for writes that could create duplicates, wait as long as Retry-After asks, and stop calling a failing dependency with a circuit breaker.

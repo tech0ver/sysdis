@@ -1,0 +1,53 @@
+<svg class="diagram-svg" viewBox="0 0 720 380" role="img" aria-labelledby="connection-setup-title connection-setup-desc" xmlns="http://www.w3.org/2000/svg">
+  <title id="connection-setup-title">A new connection per message and a reused connection</title>
+  <desc id="connection-setup-desc">With a new connection for each message, every message waits for a TCP handshake and a TLS handshake. With a reused connection, the handshakes happen once and the next message goes at once. Each pair of arrows stands for one round trip; not every protocol message is shown.</desc>
+  <defs>
+    <marker id="connection-setup-head" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path class="dg-head" d="M0,0 L8,4 L0,8 z"/></marker>
+    <marker id="connection-setup-head-accent" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path class="dg-head-accent" d="M0,0 L8,4 L0,8 z"/></marker>
+  </defs>
+  <!-- New connection for each message -->
+  <text class="dg-name" x="178" y="16" text-anchor="middle">New connection for each message</text>
+  <text class="dg-mono dg-muted-text" x="24" y="44" text-anchor="middle">APP</text>
+  <text class="dg-mono dg-muted-text" x="332" y="44" text-anchor="middle">SERVER</text>
+  <line class="dg-lifeline" x1="24" y1="52" x2="24" y2="348"/>
+  <line class="dg-lifeline" x1="332" y1="52" x2="332" y2="348"/>
+  <text class="dg-mono dg-muted-text" x="178" y="76" text-anchor="middle">TCP HANDSHAKE</text>
+  <line class="dg-arrow" x1="24" y1="84" x2="332" y2="84" marker-end="url(#connection-setup-head)"/>
+  <line class="dg-arrow" x1="332" y1="100" x2="24" y2="100" marker-end="url(#connection-setup-head)"/>
+  <text class="dg-mono dg-muted-text" x="178" y="120" text-anchor="middle">TLS HANDSHAKE</text>
+  <line class="dg-arrow" x1="24" y1="128" x2="332" y2="128" marker-end="url(#connection-setup-head)"/>
+  <line class="dg-arrow" x1="332" y1="144" x2="24" y2="144" marker-end="url(#connection-setup-head)"/>
+  <text class="dg-mono dg-accent-text" x="178" y="164" text-anchor="middle">MESSAGE 1</text>
+  <line class="dg-arrow dg-message" x1="24" y1="172" x2="332" y2="172" marker-end="url(#connection-setup-head-accent)"/>
+  <line class="dg-arrow dg-message" x1="332" y1="188" x2="24" y2="188" marker-end="url(#connection-setup-head-accent)"/>
+  <text class="dg-mono dg-muted-text" x="178" y="220" text-anchor="middle">TCP HANDSHAKE</text>
+  <line class="dg-arrow" x1="24" y1="228" x2="332" y2="228" marker-end="url(#connection-setup-head)"/>
+  <line class="dg-arrow" x1="332" y1="244" x2="24" y2="244" marker-end="url(#connection-setup-head)"/>
+  <text class="dg-mono dg-muted-text" x="178" y="264" text-anchor="middle">TLS HANDSHAKE</text>
+  <line class="dg-arrow" x1="24" y1="272" x2="332" y2="272" marker-end="url(#connection-setup-head)"/>
+  <line class="dg-arrow" x1="332" y1="288" x2="24" y2="288" marker-end="url(#connection-setup-head)"/>
+  <text class="dg-mono dg-accent-text" x="178" y="308" text-anchor="middle">MESSAGE 2</text>
+  <line class="dg-arrow dg-message" x1="24" y1="316" x2="332" y2="316" marker-end="url(#connection-setup-head-accent)"/>
+  <line class="dg-arrow dg-message" x1="332" y1="332" x2="24" y2="332" marker-end="url(#connection-setup-head-accent)"/>
+  <!-- Reused connection -->
+  <text class="dg-name" x="542" y="16" text-anchor="middle">Reused connection</text>
+  <text class="dg-mono dg-muted-text" x="388" y="44" text-anchor="middle">APP</text>
+  <text class="dg-mono dg-muted-text" x="696" y="44" text-anchor="middle">SERVER</text>
+  <line class="dg-lifeline" x1="388" y1="52" x2="388" y2="348"/>
+  <line class="dg-lifeline" x1="696" y1="52" x2="696" y2="348"/>
+  <text class="dg-mono dg-muted-text" x="542" y="76" text-anchor="middle">TCP HANDSHAKE</text>
+  <line class="dg-arrow" x1="388" y1="84" x2="696" y2="84" marker-end="url(#connection-setup-head)"/>
+  <line class="dg-arrow" x1="696" y1="100" x2="388" y2="100" marker-end="url(#connection-setup-head)"/>
+  <text class="dg-mono dg-muted-text" x="542" y="120" text-anchor="middle">TLS HANDSHAKE</text>
+  <line class="dg-arrow" x1="388" y1="128" x2="696" y2="128" marker-end="url(#connection-setup-head)"/>
+  <line class="dg-arrow" x1="696" y1="144" x2="388" y2="144" marker-end="url(#connection-setup-head)"/>
+  <text class="dg-mono dg-accent-text" x="542" y="164" text-anchor="middle">MESSAGE 1</text>
+  <line class="dg-arrow dg-message" x1="388" y1="172" x2="696" y2="172" marker-end="url(#connection-setup-head-accent)"/>
+  <line class="dg-arrow dg-message" x1="696" y1="188" x2="388" y2="188" marker-end="url(#connection-setup-head-accent)"/>
+  <text class="dg-mono dg-accent-text" x="542" y="208" text-anchor="middle">MESSAGE 2</text>
+  <line class="dg-arrow dg-message" x1="388" y1="216" x2="696" y2="216" marker-end="url(#connection-setup-head-accent)"/>
+  <line class="dg-arrow dg-message" x1="696" y1="232" x2="388" y2="232" marker-end="url(#connection-setup-head-accent)"/>
+  <text class="dg-sub" x="542" y="280" text-anchor="middle">message 2 skips</text>
+  <text class="dg-sub" x="542" y="296" text-anchor="middle">both handshakes</text>
+  <text class="dg-sub" x="360" y="376" text-anchor="middle">Each pair of arrows is one round trip; not every protocol message is shown.</text>
+</svg>

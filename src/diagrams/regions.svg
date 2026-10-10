@@ -1,0 +1,45 @@
+<svg class="diagram-svg" viewBox="0 0 720 416" role="img" aria-labelledby="regions-title regions-desc" xmlns="http://www.w3.org/2000/svg">
+  <title id="regions-title">Users in two regions</title>
+  <desc id="regions-desc">GeoDNS sends each user to a region near them, where the messages go. Photos and videos come from a CDN near the user. The two regions copy data to each other.</desc>
+  <defs>
+    <marker id="regions-head" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path class="dg-head" d="M0,0 L8,4 L0,8 z"/></marker>
+  </defs>
+  <!-- Messages -->
+  <line class="dg-arrow" x1="136" y1="112" x2="480" y2="112" marker-end="url(#regions-head)"/>
+  <text class="dg-mono dg-muted-text" x="428" y="104" text-anchor="middle">MESSAGES</text>
+  <line class="dg-arrow" x1="136" y1="304" x2="480" y2="304" marker-end="url(#regions-head)"/>
+  <text class="dg-mono dg-muted-text" x="428" y="296" text-anchor="middle">MESSAGES</text>
+  <!-- Photos -->
+  <path class="dg-arrow" d="M88 88 V40 Q88 32 96 32 H232" marker-end="url(#regions-head)"/>
+  <text class="dg-mono dg-muted-text" x="168" y="24" text-anchor="middle">PHOTOS</text>
+  <path class="dg-arrow" d="M88 328 V376 Q88 384 96 384 H232" marker-end="url(#regions-head)"/>
+  <text class="dg-mono dg-muted-text" x="168" y="376" text-anchor="middle">PHOTOS</text>
+  <!-- DNS lookups -->
+  <path class="dg-arrow" d="M104 136 V192 Q104 200 112 200 H232" marker-end="url(#regions-head)"/>
+  <path class="dg-arrow" d="M120 280 V224 Q120 216 128 216 H232" marker-end="url(#regions-head)"/>
+  <!-- Data between regions -->
+  <line class="dg-arrow dg-empty" x1="600" y1="152" x2="600" y2="264" marker-start="url(#regions-head)" marker-end="url(#regions-head)"/>
+  <text class="dg-mono dg-muted-text" x="612" y="212">COPY DATA</text>
+  <!-- Users -->
+  <rect class="dg-box" x="0" y="88" width="136" height="48" rx="6"/>
+  <text class="dg-name" x="68" y="117" text-anchor="middle">User in Europe</text>
+  <rect class="dg-box" x="0" y="280" width="136" height="48" rx="6"/>
+  <text class="dg-name" x="68" y="309" text-anchor="middle">User in Asia</text>
+  <!-- CDN and GeoDNS -->
+  <rect class="dg-box-accent" x="232" y="8" width="144" height="48" rx="6"/>
+  <text class="dg-name" x="304" y="29" text-anchor="middle">CDN</text>
+  <text class="dg-sub" x="304" y="46" text-anchor="middle">near the user</text>
+  <rect class="dg-box-accent" x="232" y="184" width="144" height="48" rx="6"/>
+  <text class="dg-name" x="304" y="205" text-anchor="middle">GeoDNS</text>
+  <text class="dg-sub" x="304" y="222" text-anchor="middle">picks a near region</text>
+  <rect class="dg-box-accent" x="232" y="360" width="144" height="48" rx="6"/>
+  <text class="dg-name" x="304" y="381" text-anchor="middle">CDN</text>
+  <text class="dg-sub" x="304" y="398" text-anchor="middle">near the user</text>
+  <!-- Regions -->
+  <rect class="dg-box" x="480" y="72" width="240" height="80" rx="6"/>
+  <text class="dg-name" x="600" y="106" text-anchor="middle">Region: Europe</text>
+  <text class="dg-sub" x="600" y="126" text-anchor="middle">balancer, servers, database</text>
+  <rect class="dg-box" x="480" y="264" width="240" height="80" rx="6"/>
+  <text class="dg-name" x="600" y="298" text-anchor="middle">Region: Asia</text>
+  <text class="dg-sub" x="600" y="318" text-anchor="middle">balancer, servers, database</text>
+</svg>

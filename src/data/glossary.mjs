@@ -22,6 +22,15 @@ const networking = (anchor, section) => ({
 /** @type {Array<{id: string, term: string, aliases?: string[], expansion?: string, short: string, explanation: string, readMore?: {href: string, label: string}}>} */
 export const glossary = [
 	{
+		id: 'client-server',
+		term: 'Client-server',
+		aliases: ['client-server', 'Client-server'],
+		short: 'A model of interaction in which a client requests work or data from a server.',
+		explanation:
+			'The server handles the request and returns a response. Client and server are roles: the same component can serve one caller and make requests to another component.',
+		readMore: networking('the-app-talks-to-the-server', 'The app talks to the server'),
+	},
+	{
 		id: 'api',
 		term: 'API',
 		expansion: 'Application Programming Interface',
@@ -37,7 +46,7 @@ export const glossary = [
 		short: 'The request-response protocol of the web.',
 		explanation:
 			'A client sends a request with a method (GET, POST, …), a path, and headers. The server sends back a status code, headers, and a body. Most public APIs run on HTTP.',
-		readMore: { href: 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Overview', label: 'MDN: An overview of HTTP' },
+		readMore: networking('agreeing-on-the-format', 'Agreeing on the format'),
 	},
 	{
 		id: 'https',
@@ -46,7 +55,7 @@ export const glossary = [
 		short: 'HTTP sent over an encrypted TLS connection.',
 		explanation:
 			'HTTPS is the same HTTP, but TLS encrypts it and proves the server is who it claims to be. Today almost all web traffic uses HTTPS.',
-		readMore: { href: 'https://developer.mozilla.org/en-US/docs/Glossary/HTTPS', label: 'MDN: HTTPS' },
+		readMore: networking('agreeing-on-the-format', 'Agreeing on the format'),
 	},
 	{
 		id: 'http-2',
@@ -54,15 +63,15 @@ export const glossary = [
 		short: 'A newer version of HTTP that sends many requests over one connection at the same time.',
 		explanation:
 			'HTTP/2 splits requests into streams on one TCP connection and compresses headers. A lost TCP packet still stops all streams until it is resent.',
-		readMore: { href: 'https://developer.mozilla.org/en-US/docs/Glossary/HTTP_2', label: 'MDN: HTTP/2' },
+		readMore: networking('agreeing-on-the-format', 'Agreeing on the format'),
 	},
 	{
 		id: 'http-3',
 		term: 'HTTP/3',
 		short: 'The version of HTTP that runs on QUIC instead of TCP.',
 		explanation:
-			'HTTP/3 keeps the many-streams model of HTTP/2, but a lost packet blocks only its own stream. It also sets up connections faster.',
-		readMore: { href: 'https://developer.mozilla.org/en-US/docs/Glossary/HTTP_3', label: 'MDN: HTTP/3' },
+			'HTTP/3 keeps the many-streams model of HTTP/2, but a lost packet holds up only the streams whose data it carried. It also sets up connections faster.',
+		readMore: networking('agreeing-on-the-format', 'Agreeing on the format'),
 	},
 	{
 		id: 'dns',
@@ -71,7 +80,7 @@ export const glossary = [
 		short: 'The system that turns a domain name into an IP address.',
 		explanation:
 			'Before a client can connect to example.com, it asks DNS for the address. Answers are cached for the time set by their TTL. DNS can also spread users across servers or regions by returning different addresses.',
-		readMore: { href: 'https://developer.mozilla.org/en-US/docs/Glossary/DNS', label: 'MDN: DNS' },
+		readMore: networking('finding-the-server', 'Finding the server'),
 	},
 	{
 		id: 'ttl',
@@ -79,18 +88,37 @@ export const glossary = [
 		expansion: 'Time To Live',
 		short: 'How long a piece of data stays valid before it must be refreshed or dropped.',
 		explanation:
-			'Caches, DNS answers, and network packets all use a TTL. A short TTL means fresher data but more work to refresh it. A long TTL means less work but older data.',
+			'Caches and DNS answers use a TTL to limit how long stored data can be reused. A short TTL means fresher data but more refreshes. A long TTL means fewer refreshes, but changes spread more slowly.',
 		readMore: { href: 'https://en.wikipedia.org/wiki/Time_to_live', label: 'Wikipedia: Time to live' },
+	},
+	{
+		id: 'osi',
+		term: 'OSI model',
+		aliases: ['OSI model', 'OSI'],
+		expansion: 'Open Systems Interconnection model',
+		short: 'A model that divides network communication into seven layers.',
+		explanation:
+			'Each layer describes a different part of communication. The layer numbers help distinguish addressing (L3), transport (L4), and application messages (L7) when discussing protocols and load balancers.',
+		readMore: networking('adding-servers', 'Adding servers'),
 	},
 	{
 		id: 'ip-address',
 		term: 'IP address',
-		aliases: ['IP address', 'IP addresses'],
+		aliases: ['IP address', 'IP addresses', 'IP'],
 		expansion: 'Internet Protocol address',
 		short: 'The number that identifies a device on a network.',
 		explanation:
-			'Packets are sent to an IP address, the way letters are sent to a street address. DNS maps names to IP addresses.',
-		readMore: { href: 'https://en.wikipedia.org/wiki/IP_address', label: 'Wikipedia: IP address' },
+			'IP, the Internet Protocol, delivers packets to these addresses with no guarantees; TCP and UDP run on top of it. DNS maps names to IP addresses.',
+		readMore: networking('finding-the-server', 'Finding the server'),
+	},
+	{
+		id: 'port',
+		term: 'Port',
+		aliases: ['port', 'ports', 'Port'],
+		short: 'A number that identifies a program on a machine, so one IP address can serve many programs.',
+		explanation:
+			'A connection goes to an IP address and a port, for example port 443 for HTTPS. L4 load balancers route traffic by IP address and port.',
+		readMore: networking('finding-the-server', 'Finding the server'),
 	},
 	{
 		id: 'tcp',
@@ -99,15 +127,7 @@ export const glossary = [
 		short: 'A transport protocol that delivers a reliable, ordered stream of bytes over a connection.',
 		explanation:
 			'TCP opens a connection with a handshake, numbers every byte, and resends what gets lost. This makes it reliable, but a lost packet delays all data after it. HTTP/1.1, HTTP/2, and most databases run on TCP.',
-		readMore: { href: 'https://developer.mozilla.org/en-US/docs/Glossary/TCP', label: 'MDN: TCP' },
-	},
-	{
-		id: 'three-way-handshake',
-		term: 'Three-way handshake',
-		short: 'The three messages that open a TCP connection.',
-		explanation:
-			'The client sends SYN (synchronize: "let\'s connect"), the server answers SYN-ACK ("got it, let\'s connect"), and the client sends ACK (acknowledge: "got it"). This costs one round trip before any data moves, which is one reason clients reuse connections.',
-		readMore: { href: 'https://developer.mozilla.org/en-US/docs/Glossary/TCP_handshake', label: 'MDN: TCP handshake' },
+		readMore: networking('delivering-data', 'Delivering data'),
 	},
 	{
 		id: 'udp',
@@ -116,7 +136,7 @@ export const glossary = [
 		short: 'A transport protocol that sends separate messages with no delivery or order guarantees.',
 		explanation:
 			'UDP has no connection and no resends, so it adds very little delay. The application must handle loss and order itself if it cares. Live audio, video, games, and QUIC use UDP.',
-		readMore: { href: 'https://developer.mozilla.org/en-US/docs/Glossary/UDP', label: 'MDN: UDP' },
+		readMore: networking('delivering-data', 'Delivering data'),
 	},
 	{
 		id: 'quic',
@@ -133,7 +153,16 @@ export const glossary = [
 		short: 'The protocol that encrypts a connection and proves the server is who it claims to be.',
 		explanation:
 			'During the TLS handshake, the client checks the server certificate and both sides agree on keys. After that, all data is encrypted. HTTPS is HTTP over TLS.',
-		readMore: { href: 'https://developer.mozilla.org/en-US/docs/Glossary/TLS', label: 'MDN: TLS' },
+		readMore: networking('securing-the-connection', 'Securing the connection'),
+	},
+	{
+		id: 'mtls',
+		term: 'mTLS',
+		expansion: 'Mutual TLS',
+		short: 'TLS in which both sides show a certificate.',
+		explanation:
+			'Each side proves who it is to the other, so only known services can connect. It is common for traffic between internal services.',
+		readMore: networking('securing-the-connection', 'Securing the connection'),
 	},
 	{
 		id: 'round-trip',
@@ -142,7 +171,7 @@ export const glossary = [
 		short: 'The time for a message to reach the other side and for the answer to come back.',
 		explanation:
 			'Also called RTT (round-trip time). Every handshake costs at least one round trip, so distance between client and server adds up fast.',
-		readMore: networking('what-a-new-request-costs', 'What a new request costs'),
+		readMore: { href: 'https://developer.mozilla.org/en-US/docs/Glossary/Round_Trip_Time', label: 'MDN: Round trip time' },
 	},
 	{
 		id: 'keep-alive',
@@ -150,7 +179,7 @@ export const glossary = [
 		short: 'Keeping a connection open after a response, so the next request can reuse it.',
 		explanation:
 			'Reusing a connection skips the TCP and TLS handshakes. Clients and servers close idle connections after a timeout.',
-		readMore: { href: 'https://en.wikipedia.org/wiki/HTTP_persistent_connection', label: 'Wikipedia: HTTP persistent connection' },
+		readMore: networking('securing-the-connection', 'Securing the connection'),
 	},
 	{
 		id: 'connection-pool',
@@ -159,15 +188,7 @@ export const glossary = [
 		short: 'A set of open connections that a client keeps and reuses.',
 		explanation:
 			'Opening a connection is slow, so services keep a pool of them to databases and other services. The pool size also limits how much load one client can put on a server.',
-		readMore: { href: 'https://en.wikipedia.org/wiki/Connection_pool', label: 'Wikipedia: Connection pool' },
-	},
-	{
-		id: 'failover',
-		term: 'Failover',
-		short: 'Switching to a backup when the main server or system fails.',
-		explanation:
-			'Failover can be automatic or manual. How fast it works depends on how quickly the failure is detected and how quickly clients learn the new address.',
-		readMore: { href: 'https://en.wikipedia.org/wiki/Failover', label: 'Wikipedia: Failover' },
+		readMore: networking('securing-the-connection', 'Securing the connection'),
 	},
 	{
 		id: 'rest',
@@ -176,7 +197,7 @@ export const glossary = [
 		short: 'An API style built on resources (URLs) and standard HTTP methods.',
 		explanation:
 			'Each thing is a resource with a URL, such as /orders/42. Clients read and change it with GET, POST, PUT, and DELETE. REST is the default style for public APIs.',
-		readMore: networking('api-protocol-rest-grpc-or-graphql', 'API protocol'),
+		readMore: { href: 'https://developer.mozilla.org/en-US/docs/Glossary/REST', label: 'MDN: REST' },
 	},
 	{
 		id: 'grpc',
@@ -184,7 +205,7 @@ export const glossary = [
 		short: 'A framework for calling functions on another service, with binary messages over HTTP/2.',
 		explanation:
 			'You describe the calls in a .proto file and generate client and server code from it. Messages are small and fast to parse. It is common for service-to-service calls, but browsers cannot call it directly.',
-		readMore: networking('api-protocol-rest-grpc-or-graphql', 'API protocol'),
+		readMore: { href: 'https://grpc.io/docs/what-is-grpc/introduction/', label: 'grpc.io: Introduction to gRPC' },
 	},
 	{
 		id: 'graphql',
@@ -192,62 +213,7 @@ export const glossary = [
 		short: 'An API style where the client sends a query that names exactly the fields it needs.',
 		explanation:
 			'There is usually one endpoint, and the response has the shape of the query. It avoids over-fetching and many round trips, but caching and rate limiting are harder.',
-		readMore: networking('api-protocol-rest-grpc-or-graphql', 'API protocol'),
-	},
-	{
-		id: 'json',
-		term: 'JSON',
-		expansion: 'JavaScript Object Notation',
-		short: 'A text format for data made of objects, arrays, strings, and numbers.',
-		explanation: 'JSON is easy for people and programs to read, so most REST APIs use it. It is larger and slower to parse than binary formats.',
-		readMore: { href: 'https://developer.mozilla.org/en-US/docs/Glossary/JSON', label: 'MDN: JSON' },
-	},
-	{
-		id: 'protocol-buffers',
-		term: 'Protocol Buffers',
-		short: 'A binary data format with a schema, made by Google.',
-		explanation:
-			'You define messages in a .proto file and generate code from it. The binary form is smaller and faster to parse than JSON. gRPC uses it.',
-		readMore: { href: 'https://protobuf.dev/overview/', label: 'protobuf.dev: Overview' },
-	},
-	{
-		id: 'openapi',
-		term: 'OpenAPI',
-		short: 'A standard format for describing an HTTP API in a file.',
-		explanation:
-			'The file lists endpoints, parameters, and response shapes. Tools use it to build documentation, client code, and tests.',
-		readMore: { href: 'https://www.openapis.org/what-is-openapi', label: 'OpenAPI Initiative: What is OpenAPI' },
-	},
-	{
-		id: 'http-trailers',
-		term: 'HTTP trailers',
-		short: 'HTTP headers sent after the response body instead of before it.',
-		explanation:
-			'Trailers carry information that is known only at the end, such as a final status. gRPC uses them, and browser fetch cannot read them.',
-		readMore: { href: 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Trailer', label: 'MDN: Trailer' },
-	},
-	{
-		id: 'grpc-web',
-		term: 'gRPC-Web',
-		short: 'A version of gRPC that browsers can use through a proxy.',
-		explanation: 'The browser sends gRPC-Web requests, and a proxy turns them into normal gRPC calls to the backend.',
-		readMore: { href: 'https://github.com/grpc/grpc-web', label: 'GitHub: grpc-web' },
-	},
-	{
-		id: 'n-plus-one',
-		term: 'N+1 problem',
-		short: 'Running one extra query for each item in a list, instead of one query for all of them.',
-		explanation:
-			'Loading 100 orders and then their users one by one makes 101 queries. Batch the lookups (for example with a data loader) to make it two.',
-		readMore: { href: 'https://graphql.org/learn/performance/', label: 'graphql.org: Performance' },
-	},
-	{
-		id: 'persisted-queries',
-		term: 'Persisted queries',
-		short: 'GraphQL queries stored on the server in advance, so the client sends only an ID.',
-		explanation:
-			'Requests become small and can be sent as GET, so HTTP caches and CDNs can store the responses. The server can also refuse any query it does not know.',
-		readMore: { href: 'https://www.apollographql.com/docs/apollo-server/performance/apq', label: 'Apollo: Automatic persisted queries' },
+		readMore: { href: 'https://graphql.org/learn/', label: 'graphql.org: Learn GraphQL' },
 	},
 	{
 		id: 'rate-limit',
@@ -255,16 +221,7 @@ export const glossary = [
 		aliases: ['rate limit', 'rate limits', 'Rate limits'],
 		short: 'A cap on how many requests a client may send in a period of time.',
 		explanation: 'Rate limits protect a service from overload and abuse. Requests over the limit usually get HTTP 429.',
-		readMore: { href: 'https://en.wikipedia.org/wiki/Rate_limiting', label: 'Wikipedia: Rate limiting' },
-	},
-	{
-		id: 'idempotent',
-		term: 'Idempotent',
-		aliases: ['idempotent', 'Idempotent'],
-		short: 'An operation is idempotent if doing it twice leaves the same result as doing it once.',
-		explanation:
-			'Idempotent operations are safe to retry. In HTTP, GET, PUT, and DELETE are idempotent and POST is not.',
-		readMore: networking('http-details-that-change-the-design', 'HTTP details that change the design'),
+		readMore: networking('when-a-call-fails', 'When a call fails'),
 	},
 	{
 		id: 'idempotency-key',
@@ -276,19 +233,11 @@ export const glossary = [
 		readMore: networking('when-a-call-fails', 'When a call fails'),
 	},
 	{
-		id: 'etag',
-		term: 'ETag',
-		short: 'An HTTP header with a version tag of a response.',
-		explanation:
-			'The client sends the tag back to ask "has it changed?". If not, the server answers 304 Not Modified with no body.',
-		readMore: { href: 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/ETag', label: 'MDN: ETag' },
-	},
-	{
 		id: 'polling',
 		term: 'Polling',
 		short: 'The client asks the server for new data again and again on a timer.',
 		explanation: 'Polling is simple and works everywhere. The cost is delay (up to one interval) and many empty requests.',
-		readMore: networking('pushing-updates-to-clients', 'Pushing updates to clients'),
+		readMore: networking('pushing-new-messages', 'Pushing new messages'),
 	},
 	{
 		id: 'long-polling',
@@ -296,16 +245,16 @@ export const glossary = [
 		aliases: ['long polling', 'Long polling'],
 		short: 'The server holds a request open until it has new data or a timeout, then the client asks again.',
 		explanation: 'Long polling gives near real-time updates over plain HTTP, without new infrastructure.',
-		readMore: networking('pushing-updates-to-clients', 'Pushing updates to clients'),
+		readMore: networking('pushing-new-messages', 'Pushing new messages'),
 	},
 	{
 		id: 'sse',
 		term: 'SSE',
 		expansion: 'Server-Sent Events',
-		short: 'A long HTTP response through which the server streams text events to the browser.',
+		short: 'A long HTTP response through which the server streams text events to the client.',
 		explanation:
-			'The browser reconnects by itself and tells the server the last event it got. SSE sends data only from server to client.',
-		readMore: { href: 'https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events', label: 'MDN: Server-sent events' },
+			'Browsers reconnect by themselves and send the ID of the last event, if the server sets IDs. SSE sends data only from server to client.',
+		readMore: networking('pushing-new-messages', 'Pushing new messages'),
 	},
 	{
 		id: 'websocket',
@@ -314,87 +263,32 @@ export const glossary = [
 		short: 'A long-lived connection where client and server can both send messages at any time.',
 		explanation:
 			'It starts as an HTTP request and then upgrades to a two-way channel on the same TCP connection. Used for chat, collaboration, and games.',
-		readMore: { href: 'https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API', label: 'MDN: WebSockets API' },
+		readMore: networking('pushing-new-messages', 'Pushing new messages'),
 	},
 	{
 		id: 'webrtc',
 		term: 'WebRTC',
 		expansion: 'Web Real-Time Communication',
-		short: 'A browser technology for direct peer-to-peer audio, video, and data.',
+		short: 'A technology for direct peer-to-peer audio, video, and data in browsers and mobile apps.',
 		explanation:
 			'Peers connect to each other over UDP when they can. A signaling server, STUN, and TURN help them find each other through NAT.',
-		readMore: { href: 'https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API', label: 'MDN: WebRTC API' },
-	},
-	{
-		id: 'nat',
-		term: 'NAT',
-		expansion: 'Network Address Translation',
-		short: 'A router feature that lets many devices share one public IP address.',
-		explanation:
-			'The router rewrites addresses on the way out and remembers the mapping for replies. New connections from outside usually cannot reach a device behind NAT.',
-		readMore: { href: 'https://en.wikipedia.org/wiki/Network_address_translation', label: 'Wikipedia: Network address translation' },
-	},
-	{
-		id: 'stun',
-		term: 'STUN',
-		expansion: 'Session Traversal Utilities for NAT',
-		short: 'A server that tells a device its public IP address and port.',
-		explanation: 'Peers behind NAT use STUN to learn how others can reach them, so they can try a direct connection.',
-		readMore: { href: 'https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API/Protocols', label: 'MDN: WebRTC protocols' },
+		readMore: networking('pushing-new-messages', 'Pushing new messages'),
 	},
 	{
 		id: 'turn',
 		term: 'TURN',
 		expansion: 'Traversal Using Relays around NAT',
 		short: 'A relay server that forwards traffic between peers when they cannot connect directly.',
-		explanation: 'TURN always works, but all media goes through your server, so it costs bandwidth.',
-		readMore: { href: 'https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API/Protocols', label: 'MDN: WebRTC protocols' },
+		explanation: 'TURN relays media when a direct connection is not possible. All media then goes through the relay, so it needs enough bandwidth.',
+		readMore: networking('pushing-new-messages', 'Pushing new messages'),
 	},
 	{
-		id: 'signaling-server',
-		term: 'Signaling server',
-		short: 'A server that passes connection details between peers before they connect directly.',
-		explanation: 'WebRTC does not define how signaling works. Apps often use WebSocket for it.',
-		readMore: { href: 'https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API/Signaling_and_video_calling', label: 'MDN: Signaling and video calling' },
-	},
-	{
-		id: 'llm',
-		term: 'LLM',
-		expansion: 'Large Language Model',
-		short: 'An AI model that reads and writes text.',
-		explanation: 'LLM APIs often stream the answer token by token, which fits SSE well.',
-		readMore: { href: 'https://en.wikipedia.org/wiki/Large_language_model', label: 'Wikipedia: Large language model' },
-	},
-	{
-		id: 'pub-sub',
-		term: 'Pub/sub',
-		expansion: 'publish-subscribe',
-		short: 'A messaging pattern where publishers send messages to a channel and every subscriber gets a copy.',
+		id: 'signaling',
+		term: 'Signaling',
+		short: 'Exchanging connection details between two peers before they connect directly.',
 		explanation:
-			'Publishers do not know who the subscribers are. It is used to fan out events, for example from one service to all WebSocket servers.',
-		readMore: { href: 'https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern', label: 'Wikipedia: Publish-subscribe pattern' },
-	},
-	{
-		id: 'redis',
-		term: 'Redis',
-		short: 'A fast in-memory data store, often used as a cache, a queue, or for pub/sub.',
-		explanation: 'Redis keeps data in memory, so reads and writes take well under a millisecond inside a data center.',
-		readMore: { href: 'https://redis.io/docs/latest/', label: 'Redis docs' },
-	},
-	{
-		id: 'heartbeat',
-		term: 'Heartbeat',
-		aliases: ['heartbeat', 'heartbeats', 'Heartbeats'],
-		short: 'A small message sent on a timer to show a connection or process is still alive.',
-		explanation: 'If heartbeats stop, the other side treats the peer as dead. They also stop proxies from closing idle connections.',
-		readMore: networking('running-long-lived-connections-at-scale', 'Running long-lived connections at scale'),
-	},
-	{
-		id: 'backpressure',
-		term: 'Backpressure',
-		short: 'What happens when a receiver cannot keep up and data piles up on the way to it.',
-		explanation: 'A system handles backpressure by slowing the sender, buffering a bounded amount, or dropping data.',
-		readMore: networking('running-long-lived-connections-at-scale', 'Running long-lived connections at scale'),
+			'WebRTC does not define how signaling works. Apps usually send it through a server they already have, for example over WebSocket.',
+		readMore: networking('pushing-new-messages', 'Pushing new messages'),
 	},
 	{
 		id: 'load-balancer',
@@ -402,7 +296,7 @@ export const glossary = [
 		aliases: ['load balancer', 'load balancers'],
 		short: 'A component that spreads incoming traffic across several servers.',
 		explanation: 'It also stops sending traffic to servers that fail health checks, so clients see one stable address.',
-		readMore: networking('load-balancing', 'Load balancing'),
+		readMore: networking('adding-servers', 'Adding servers'),
 	},
 	{
 		id: 'l4-l7',
@@ -410,14 +304,7 @@ export const glossary = [
 		aliases: ['L4', 'L7'],
 		short: 'Network layers: L4 is the transport layer (TCP, UDP), L7 is the application layer (HTTP).',
 		explanation: 'An L4 load balancer routes connections. An L7 load balancer reads each HTTP request and can route by path or header.',
-		readMore: networking('l4-or-l7', 'L4 or L7'),
-	},
-	{
-		id: 'tls-termination',
-		term: 'TLS termination',
-		short: 'Decrypting TLS traffic at a load balancer or proxy instead of at the backend.',
-		explanation: 'The load balancer can then read and route HTTP. Traffic to the backend is either plain or encrypted again.',
-		readMore: networking('l4-or-l7', 'L4 or L7'),
+		readMore: networking('adding-servers', 'Adding servers'),
 	},
 	{
 		id: 'round-robin',
@@ -425,23 +312,23 @@ export const glossary = [
 		aliases: ['round robin', 'Round robin'],
 		short: 'Sending each new request to the next server in turn.',
 		explanation: 'Round robin is simple and works well when requests cost about the same.',
-		readMore: networking('algorithms', 'Algorithms'),
+		readMore: networking('spreading-the-load', 'Spreading the load'),
+	},
+	{
+		id: 'weighted-round-robin',
+		term: 'Weighted round robin',
+		aliases: ['weighted round robin', 'Weighted round robin'],
+		short: 'Round robin that sends more requests to servers with a higher weight.',
+		explanation: 'Weights follow server capacity, so a server twice as big gets twice the traffic.',
+		readMore: networking('spreading-the-load', 'Spreading the load'),
 	},
 	{
 		id: 'least-connections',
 		term: 'Least connections',
 		aliases: ['least connections', 'Least connections'],
 		short: 'Sending each new connection to the server with the fewest open connections.',
-		explanation: 'Good for long-lived connections such as WebSockets, where round robin can leave some servers overloaded.',
-		readMore: networking('algorithms', 'Algorithms'),
-	},
-	{
-		id: 'consistent-hashing',
-		term: 'Consistent hashing',
-		short: 'A way to map keys to servers so that adding or removing a server moves only a few keys.',
-		explanation:
-			'With plain hash mod N, changing N moves most keys. Consistent hashing places keys and servers on a ring, so a change touches only its neighbors. Used for sharding and per-key routing.',
-		readMore: { href: 'https://en.wikipedia.org/wiki/Consistent_hashing', label: 'Wikipedia: Consistent hashing' },
+		explanation: 'Good for long-lived connections, where the number of open connections shows the load better than the number of requests.',
+		readMore: networking('spreading-the-load', 'Spreading the load'),
 	},
 	{
 		id: 'health-check',
@@ -449,15 +336,15 @@ export const glossary = [
 		aliases: ['health check', 'health checks', 'Health checks'],
 		short: 'A regular probe that tells whether a server can take traffic.',
 		explanation: 'Load balancers remove servers that fail several checks in a row and add them back after several successes.',
-		readMore: networking('keeping-it-available', 'Keeping it available'),
+		readMore: networking('adding-servers', 'Adding servers'),
 	},
 	{
-		id: 'connection-draining',
-		term: 'Connection draining',
-		aliases: ['connection draining', 'Connection draining'],
-		short: 'Letting a server finish its current requests before it is removed.',
-		explanation: 'The load balancer stops sending new work to the server, then removes it once current work is done or a timeout passes.',
-		readMore: networking('keeping-it-available', 'Keeping it available'),
+		id: 'single-point-of-failure',
+		term: 'Single point of failure',
+		aliases: ['single point of failure', 'Single point of failure'],
+		short: 'A part whose failure stops the whole system.',
+		explanation: 'Remove it by running more than one copy and switching to a healthy one automatically.',
+		readMore: { href: 'https://en.wikipedia.org/wiki/Single_point_of_failure', label: 'Wikipedia: Single point of failure' },
 	},
 	{
 		id: 'sticky-sessions',
@@ -465,14 +352,23 @@ export const glossary = [
 		aliases: ['sticky sessions', 'Sticky sessions'],
 		short: 'Sending all requests from one client to the same server.',
 		explanation: 'It keeps server-local state usable, but makes failover and rebalancing harder.',
-		readMore: networking('keeping-it-available', 'Keeping it available'),
+		readMore: networking('servers-with-state', 'Servers with state'),
+	},
+	{
+		id: 'stateless',
+		term: 'Stateless',
+		aliases: ['stateless', 'Stateless'],
+		short: 'Keeping no user data on the server between requests.',
+		explanation:
+			'Each request carries what the server needs, and user data lives in a shared store. Any server can then handle any request, which makes scaling and failures simpler.',
+		readMore: networking('servers-with-state', 'Servers with state'),
 	},
 	{
 		id: 'service-discovery',
 		term: 'Service discovery',
 		short: 'A way for services to find the current addresses of other services.',
-		explanation: 'Instances register themselves, and clients ask the registry for healthy instances. Used with client-side load balancing.',
-		readMore: { href: 'https://en.wikipedia.org/wiki/Service_discovery', label: 'Wikipedia: Service discovery' },
+		explanation: 'Instances register themselves, and clients ask the registry for healthy instances. A load balancer or the client itself uses it to pick a live instance.',
+		readMore: networking('finding-the-server', 'Finding the server'),
 	},
 	{
 		id: 'cdn',
@@ -480,14 +376,31 @@ export const glossary = [
 		expansion: 'Content Delivery Network',
 		short: 'A network of servers around the world that cache content close to users.',
 		explanation: 'A CDN cuts latency for users and load on your servers. It suits static files and responses that many users read.',
-		readMore: { href: 'https://developer.mozilla.org/en-US/docs/Glossary/CDN', label: 'MDN: CDN' },
+		readMore: networking('users-far-away', 'Users far away'),
+	},
+	{
+		id: 'geodns',
+		term: 'GeoDNS',
+		short: 'DNS that answers with different addresses depending on where the client is.',
+		explanation:
+			'It picks a region from an estimate of where the user is. Cached answers delay a change until they expire, and open connections must reconnect.',
+		readMore: networking('users-far-away', 'Users far away'),
+	},
+	{
+		id: 'consistency',
+		term: 'Consistency',
+		aliases: ['consistency', 'Consistency'],
+		short: 'The rules for which version of data a read may return.',
+		explanation:
+			'With strong consistency, a read sees the latest completed write. Weaker consistency allows older data, which needs less coordination between copies and makes reads faster.',
+		readMore: { href: 'https://en.wikipedia.org/wiki/Consistency_model', label: 'Wikipedia: Consistency model' },
 	},
 	{
 		id: 'deadline',
 		term: 'Deadline',
 		aliases: ['deadline', 'deadlines'],
 		short: 'The latest time by which a whole request must finish.',
-		explanation: 'Each service passes the remaining time to the services it calls, so no one keeps working on a request the user already gave up on.',
+		explanation: 'Each service passes the remaining time to the services it calls, so they can stop work that is no longer needed.',
 		readMore: networking('when-a-call-fails', 'When a call fails'),
 	},
 	{
@@ -510,14 +423,6 @@ export const glossary = [
 		aliases: ['circuit breaker', 'Circuit breaker'],
 		short: 'A guard that stops calls to a failing dependency for a while and fails fast instead.',
 		explanation: 'It has three states: closed (calls pass), open (calls fail fast), and half-open (a few test calls). It keeps one failure from spreading.',
-		readMore: networking('when-a-call-fails', 'When a call fails'),
-	},
-	{
-		id: 'load-shedding',
-		term: 'Load shedding',
-		aliases: ['load shedding', 'Load shedding', 'shed load'],
-		short: 'Rejecting part of the requests on purpose when a service is overloaded.',
-		explanation: 'Fast rejections keep the service working for the rest of the traffic, instead of slowing down for everyone.',
 		readMore: networking('when-a-call-fails', 'When a call fails'),
 	},
 ];

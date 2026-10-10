@@ -1,0 +1,53 @@
+<svg class="diagram-svg" viewBox="0 0 720 296" role="img" aria-labelledby="idempotency-key-title idempotency-key-desc" xmlns="http://www.w3.org/2000/svg">
+  <title id="idempotency-key-title">A retry with and without an idempotency key</title>
+  <desc id="idempotency-key-desc">The server saves the message, but the response is lost, so the app retries after a timeout. Without a key, the server saves the message again. With a key, it sees the key and returns the saved result.</desc>
+  <defs>
+    <marker id="idempotency-key-head" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path class="dg-head" d="M0,0 L8,4 L0,8 z"/></marker>
+  </defs>
+  <!-- Without a key -->
+  <text class="dg-name" x="170" y="16" text-anchor="middle">Without a key</text>
+  <text class="dg-mono dg-muted-text" x="70" y="44" text-anchor="middle">APP</text>
+  <text class="dg-mono dg-muted-text" x="250" y="44" text-anchor="middle">SERVER</text>
+  <line class="dg-lifeline" x1="70" y1="52" x2="70" y2="252"/>
+  <line class="dg-lifeline" x1="250" y1="52" x2="250" y2="252"/>
+  <text class="dg-mono dg-muted-text" x="160" y="76" text-anchor="middle">SEND</text>
+  <line class="dg-arrow" x1="70" y1="84" x2="250" y2="84" marker-end="url(#idempotency-key-head)"/>
+  <rect class="dg-box" x="258" y="74" width="82" height="20" rx="4"/>
+  <text class="dg-note" x="299" y="88" text-anchor="middle">saved</text>
+  <text class="dg-mono dg-muted-text" x="196" y="114" text-anchor="middle">RESPONSE LOST</text>
+  <line class="dg-arrow dg-empty" x1="250" y1="124" x2="150" y2="124"/>
+  <line class="dg-cross" x1="140" y1="120" x2="148" y2="128"/>
+  <line class="dg-cross" x1="140" y1="128" x2="148" y2="120"/>
+  <line class="dg-arrow" x1="62" y1="164" x2="78" y2="164"/>
+  <text class="dg-mono dg-muted-text" x="56" y="168" text-anchor="end">TIMEOUT</text>
+  <text class="dg-mono dg-muted-text" x="160" y="196" text-anchor="middle">RETRY</text>
+  <line class="dg-arrow" x1="70" y1="204" x2="250" y2="204" marker-end="url(#idempotency-key-head)"/>
+  <rect class="dg-box-accent" x="258" y="194" width="82" height="20" rx="4"/>
+  <text class="dg-note" x="299" y="208" text-anchor="middle">saved again</text>
+  <text class="dg-mono dg-muted-text" x="160" y="228" text-anchor="middle">OK</text>
+  <line class="dg-arrow" x1="250" y1="236" x2="70" y2="236" marker-end="url(#idempotency-key-head)"/>
+  <text class="dg-result" x="170" y="284" text-anchor="middle">Two copies of the message</text>
+  <!-- With a key -->
+  <text class="dg-name" x="550" y="16" text-anchor="middle">With an idempotency key</text>
+  <text class="dg-mono dg-muted-text" x="450" y="44" text-anchor="middle">APP</text>
+  <text class="dg-mono dg-muted-text" x="630" y="44" text-anchor="middle">SERVER</text>
+  <line class="dg-lifeline" x1="450" y1="52" x2="450" y2="252"/>
+  <line class="dg-lifeline" x1="630" y1="52" x2="630" y2="252"/>
+  <text class="dg-mono dg-muted-text" x="540" y="76" text-anchor="middle">SEND, KEY 42</text>
+  <line class="dg-arrow" x1="450" y1="84" x2="630" y2="84" marker-end="url(#idempotency-key-head)"/>
+  <rect class="dg-box" x="638" y="74" width="82" height="20" rx="4"/>
+  <text class="dg-note" x="679" y="88" text-anchor="middle">saved</text>
+  <text class="dg-mono dg-muted-text" x="576" y="114" text-anchor="middle">RESPONSE LOST</text>
+  <line class="dg-arrow dg-empty" x1="630" y1="124" x2="530" y2="124"/>
+  <line class="dg-cross" x1="520" y1="120" x2="528" y2="128"/>
+  <line class="dg-cross" x1="520" y1="128" x2="528" y2="120"/>
+  <line class="dg-arrow" x1="442" y1="164" x2="458" y2="164"/>
+  <text class="dg-mono dg-muted-text" x="436" y="168" text-anchor="end">TIMEOUT</text>
+  <text class="dg-mono dg-muted-text" x="540" y="196" text-anchor="middle">RETRY, KEY 42</text>
+  <line class="dg-arrow" x1="450" y1="204" x2="630" y2="204" marker-end="url(#idempotency-key-head)"/>
+  <rect class="dg-box" x="638" y="194" width="82" height="20" rx="4"/>
+  <text class="dg-note" x="679" y="208" text-anchor="middle">key seen</text>
+  <text class="dg-mono dg-muted-text" x="540" y="228" text-anchor="middle">SAVED RESULT</text>
+  <line class="dg-arrow" x1="630" y1="236" x2="450" y2="236" marker-end="url(#idempotency-key-head)"/>
+  <text class="dg-result" x="550" y="284" text-anchor="middle">One copy</text>
+</svg>
